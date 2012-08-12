@@ -84,8 +84,8 @@ public class FooshareApplication extends Application {
      */
     public void checkin() {
         // TODO uncomment
-        //initAlljoynService();
-        //initFileServerService();
+        initAlljoynService();
+        initFileServerService();
     }
 
     /**
