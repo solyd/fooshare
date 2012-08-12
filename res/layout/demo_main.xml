@@ -1,0 +1,53 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="top" >
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Peers"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ListView
+        android:id="@+id/PeerListView"
+        android:layout_width="fill_parent"
+        android:layout_height="112dp"
+        android:stackFromBottom="false"
+        android:transcriptMode="alwaysScroll" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Files"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ListView
+        android:id="@+id/FileListView"
+        android:layout_width="fill_parent"
+        android:layout_height="52dp"
+        android:layout_weight="0.78"
+        android:stackFromBottom="false"
+        android:transcriptMode="alwaysScroll" >
+    </ListView>
+</LinearLayout>
+ 
+<Button
+    android:id="@+id/button1"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentLeft="true"
+    android:text="Quit"
+    android:onClick="onQuit" />
+    
+</RelativeLayout>

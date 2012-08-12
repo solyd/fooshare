@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" 
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+                
+   <TextView 
+        android:id="@+id/search_entry_fileName"
+ 	  	android:layout_width="220dip"
+ 		android:layout_height="20dip"
+ 	  	android:textSize="13dip"
+ 	  	android:textColor="#f5f5f5"/>  
+      		  	   		  
+      
+    <TextView 
+        	android:id="@+id/search_entry_fileSize"
+     		android:layout_width="50dip"
+      		android:layout_height="wrap_content"
+      	  	android:textSize="15dp"
+   		  	android:textColor="#f5f5f5"/> 
+   		  	
+    <TextView 
+        	android:id="@+id/search_entry_fileType"
+     		android:layout_width="50dip"
+      		android:layout_height="wrap_content"
+      	  	android:textSize="15dp"
+   		  	android:textColor="#f5f5f5"/> 
+      
+</LinearLayout>

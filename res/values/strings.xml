@@ -1,0 +1,15 @@
+<resources>
+
+    <string name="app_name">fooshare</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">fooshare</string>
+    <string name="quit_app">Quit</string>
+    <string name="downloading">Downloading...</string>
+    <string name="downloads">Downloads</string>
+    <string name="updateListBtn">Demo</string>
+        
+    
+    <string name="uploads">Uploads</string>
+
+</resources>
