@@ -4,91 +4,13 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:noHistory="true">  
-    
-	<TextView 
-    	android:id="@+id/reg_headline"
-		android:layout_width="fill_parent"
-   		android:layout_height="wrap_content"
-   		android:text = "Registration"/>
    		    
-    <TextView 
-  		android:id="@+id/chooseNick"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text = "Enter your nickname:"/>
-	
-	<LinearLayout 
-	    xmlns:android="http://schemas.android.com/apk/res/android"
-  		android:layout_width="fill_parent"
-   		android:layout_height="wrap_content"
-		android:orientation="horizontal">  
-     	
-     	<EditText 
-     		android:id="@+id/name_field"
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:inputType="text"
-			android:layout_weight="1"/>
-		
-		<Button 
-		    android:text="OK"
-   			android:id="@+id/nick_ok"
-    		android:layout_width="wrap_content"
-    		android:layout_height="wrap_content"
-     		android:onClick="nickNameOkClicked"/>
-     	
-	</LinearLayout>
-   		
-	<TextView 
-  		android:id="@+id/chooseDFolder"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text = "Select download folder:"/>
- 
-	<EditText android:id="@+id/downloads_folder_field"
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent"
-		android:text="Press here to select a folder..."
-		android:textColor="#cdc9c9"
-		android:focusable="false"
-		android:clickable="true"
-		android:inputType="text"
-		android:onClick="downloadsFolderFieldClicked">
-	</EditText>		
-		
-	<LinearLayout 
-	    xmlns:android="http://schemas.android.com/apk/res/android"
-  		android:layout_width="fill_parent"
-  		android:layout_height="wrap_content"
-  		android:orientation="vertical"
-  		android:layout_weight="1"> 
-	    
-	    <LinearLayout
-        	android:layout_width="fill_parent"
-        	android:layout_height="wrap_content" >
+    <FrameLayout
+        android:id="@+id/fragment_reg_content"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
 
-		    <TextView 
-	  			android:id="@+id/chooseUFolder"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:text = "Select shared folder:"/>
-	
-	        <Button
-	            android:id="@+id/button_download"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="Add..."
-	            android:onClick="OnClick_UploadDir" />
-    	</LinearLayout>
-	    
-	    
-  		<ListView
-        	android:id="@+id/listView_uDir"
-        	android:layout_width="fill_parent"
-        	android:layout_height="wrap_content"/>
-	    
-	</LinearLayout>   
+    </FrameLayout>
        
 	<Button 
 	    android:text="Done"
