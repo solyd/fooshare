@@ -111,8 +111,11 @@ public class FileServer {
                 Log.i(TAG, "Uploading file of size: " + requestedFile.length());
 
                 BufferedInputStream fileIn = _fooshare.storage().getStream4Upload(requestedFileName);
-                //BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(requestedFile), BUFFER_SIZE);
-
+                if (fileIn == null) {
+                    Log.e(TAG, "Couldn't open InputStream to read file " + requestedFileName);
+                    _clientSocket.close();
+                    return;
+                }
 
                 int totalUploadedBytes = 0;
                 int readBytes = 0;

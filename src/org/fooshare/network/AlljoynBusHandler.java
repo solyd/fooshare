@@ -11,6 +11,7 @@ import org.alljoyn.bus.Status;
 import org.fooshare.FooshareApplication;
 import org.fooshare.events.Event;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -236,6 +237,8 @@ public class AlljoynBusHandler extends Handler {
             doDisconnect();
             break;
         case EXIT:
+            _alljoynService.stopService(new Intent(_fooshare.getApplicationContext(),
+                                                   org.alljoyn.bus.alljoyn.BundleDaemonService.class));
             getLooper().quit();
             break;
 
@@ -251,13 +254,15 @@ public class AlljoynBusHandler extends Handler {
     protected synchronized void doConnect() {
         Log.d(TAG, "doConnect()");
 
-        org.alljoyn.bus.alljoyn.DaemonInit.PrepareDaemonAsync(_alljoynService.getApplicationContext());
+        org.alljoyn.bus.alljoyn.DaemonInit.PrepareDaemon(_alljoynService.getApplicationContext());
+        /*
         try {
             Thread.sleep(300);
         }
         catch (InterruptedException e) {
             Log.i(TAG, Log.getStackTraceString(e));
         }
+        */
 
         _bus = new BusAttachment(_alljoynService.getApplicationContext().getPackageName(), BusAttachment.RemoteMessage.Receive);
         //_bus = new BusAttachment(FooshareApplication.APPNAME, BusAttachment.RemoteMessage.Receive);

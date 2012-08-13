@@ -1,8 +1,10 @@
 package org.fooshare;
 
+import java.util.Collection;
+
 import org.fooshare.events.Delegate;
 import org.fooshare.network.DownloadService;
-import org.fooshare.network.IPeerService.FileItem;
+import org.fooshare.network.IPeerService.AlljoynFileItem;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -36,7 +38,7 @@ private static final String TAG = "DemoActivity";
         public void invoke(IPeer peer) {
             final String peerId = peer.id();
             final String peerName = peer.name();
-            final FileItem[] peerFiles = peer.files();
+            final Collection<FileItem> peerFiles = peer.files();
             handler.post(new Runnable() {
                 public void run() {
                     _peerAdapter.add(peerId);
@@ -52,7 +54,7 @@ private static final String TAG = "DemoActivity";
         public void invoke(IPeer peer) {
             final String peerId = peer.id();
             final String peerName = peer.name();
-            final FileItem[] peerFiles = peer.files();
+            final Collection<FileItem> peerFiles = peer.files();
             handler.post(new Runnable() {
                 public void run() {
                     _peerAdapter.remove(peerId);
@@ -99,6 +101,7 @@ private static final String TAG = "DemoActivity";
         _fileListView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 FileItem f = (FileItem) _fileAdapter.getItem(position);
+
                 _progressDialog = new ProgressDialog(DemoActivity.this);
                 _progressDialog.setCancelable(true);
                 _progressDialog.setMessage("Downloading " + f.toString());
@@ -106,6 +109,7 @@ private static final String TAG = "DemoActivity";
                 _progressDialog.setProgress(0);
                 _progressDialog.setMax(0);
                 _progressDialog.show();
+
 
                 _fooshare.startDownloadService(f, new DownloadReceiver(new Handler()));
             }
@@ -127,6 +131,8 @@ private static final String TAG = "DemoActivity";
             long total = resultData.getLong(DownloadService.PROGRESS_LEFT);
             _progressDialog.setMax((int) total);
             _progressDialog.setProgress((int) downloaded);
+
+
             /*
             if (downloaded == total) {
                 _progressDialog.dismiss();

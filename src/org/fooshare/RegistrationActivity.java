@@ -103,9 +103,9 @@ public class RegistrationActivity extends Activity {
 	public void OnClick_UploadDir(View view){
 		Log.d(TAG, "OnClick_UploadDir is running");
 
-    	Intent fileExploreIntent = new Intent(ua.com.vassiliev.androidfilebrowser.FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
-								null,this , ua.com.vassiliev.androidfilebrowser.FileBrowserActivity.class );
-    	fileExploreIntent.putExtra(ua.com.vassiliev.androidfilebrowser.FileBrowserActivity.startDirectoryParameter, mInitalPath);
+    	Intent fileExploreIntent = new Intent(org.fooshare.FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
+								null,this , org.fooshare.FileBrowserActivity.class );
+    	fileExploreIntent.putExtra(org.fooshare.FileBrowserActivity.startDirectoryParameter, mInitalPath);
      	startActivityForResult( fileExploreIntent, REQUEST_CODE_PICK_UPLOAD_DIR );
 	}
 
@@ -124,10 +124,10 @@ public class RegistrationActivity extends Activity {
 
 		Log.d(TAG, "downloadsFolderFieldClicked is running");
 
-    	Intent fileExploreIntent = new Intent(ua.com.vassiliev.androidfilebrowser.FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
-								null,this , ua.com.vassiliev.androidfilebrowser.FileBrowserActivity.class );
+    	Intent fileExploreIntent = new Intent(org.fooshare.FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
+								null,this , org.fooshare.FileBrowserActivity.class );
 
-    	fileExploreIntent.putExtra(ua.com.vassiliev.androidfilebrowser.FileBrowserActivity.startDirectoryParameter, mInitalPath);
+    	fileExploreIntent.putExtra(org.fooshare.FileBrowserActivity.startDirectoryParameter, mInitalPath);
      	startActivityForResult( fileExploreIntent, REQUEST_CODE_PICK_DIR );
 	}
 
@@ -136,7 +136,7 @@ public class RegistrationActivity extends Activity {
 
 		String newDir = "";
     	if(resultCode == RESULT_OK) {
-    		newDir = data.getStringExtra(ua.com.vassiliev.androidfilebrowser.FileBrowserActivity.returnDirectoryParameter);
+    		newDir = data.getStringExtra(org.fooshare.FileBrowserActivity.returnDirectoryParameter);
     	} else {
     		Log.d(TAG, "no result from the activity");
     		return;

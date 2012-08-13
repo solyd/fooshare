@@ -1,9 +1,6 @@
 package org.fooshare;
 import java.util.ArrayList;
 
-import org.fooshare.network.IPeerService.FileItem;
-import org.fooshare.predicates.Predicate;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -56,9 +53,9 @@ class  SearchListEntryAdapter extends ArrayAdapter <FileItem> {
         }
 
         FileItem entry = data.get(position);
-        holder.fileSize.setText(String.format("%d", entry.sizeInBytes));
-        holder.fileName.setText(entry.toString());
-        holder.fileType.setText("type");
+        holder.fileSize.setText(String.format("%d", entry.getSizeInBytes()));
+        holder.fileName.setText(entry.getName());
+        holder.fileType.setText(entry.getType());
         return row;
     }
 
@@ -114,7 +111,7 @@ public class SearchActivity extends Activity {
 	public ArrayList<FileItem> creatNewList(){
 
 		ArrayList<FileItem> list = new ArrayList<FileItem>();
-		/*
+/*
         list.add(new FileItem("FileName1.avi-Path","Brad.avi","23k","1234"));
         list.add(new FileItem("FileName2.avi-Path","Tom.mp3","23k","2345"));
         list.add(new FileItem("FileName3.avi-Path","Barbara.mobi","23k","67324"));
@@ -127,7 +124,7 @@ public class SearchActivity extends Activity {
         list.add(new FileItem("FileName2.avi-Path","Tom.mp4","30MB","1234"));
         list.add(new FileItem("FileName3.avi-Path","Paris.mobi","23k","1234"));
         list.add(new FileItem("FileName4.avi-Path","Pipi.Kaki.avi","564T","264"));
-        */
+*/
         return list;
 
 	}

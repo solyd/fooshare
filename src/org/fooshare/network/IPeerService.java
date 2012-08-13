@@ -8,7 +8,7 @@ import org.alljoyn.bus.annotation.Position;
 
 @BusInterface
 public interface IPeerService {
-    public class FileItem {
+    public class AlljoynFileItem {
         @Position(0)
         public String fullName;
         @Position(1)
@@ -34,7 +34,7 @@ public interface IPeerService {
     String peerName() throws BusException;
 
     @BusMethod(replySignature="a(sxs)")
-    FileItem[] peerFiles() throws BusException;
+    AlljoynFileItem[] peerFiles() throws BusException;
 
     @BusMethod(replySignature="(si)")
     FileServerInfo fileServerDetails() throws BusException;

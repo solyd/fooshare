@@ -58,7 +58,7 @@
            android:theme="@android:style/Theme.NoTitleBar" />
 
       
-      <activity android:name="ua.com.vassiliev.androidfilebrowser.FileBrowserActivity"
+      <activity android:name=".FileBrowserActivity"
                 android:theme="@android:style/Theme.NoTitleBar"/>
 
         

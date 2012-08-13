@@ -186,94 +186,38 @@ public class Storage implements IStorage  {
 		return sharedFiles.toArray(new File[0]);
 	}
 
-
-
-	// TODO cleanup this method
 	public synchronized BufferedOutputStream getStream4Download(String fileName) {
 		File file = new File(mDownloadDirectory, fileName);
-
-		/*
-		FileOutputStream fos = null;
-		BufferedOutputStream bos = null;
-		*/
-
 		try {
 		    return new BufferedOutputStream(new FileOutputStream(file), BUFFER_SIZE);
-		    /*
-			fos = new FileOutputStream(file);
-			bos = new BufferedOutputStream(fos);
-			*/
 		} catch (IOException e) {
-			Log.i(TAG, Log.getStackTraceString(e));
+			Log.e(TAG, Log.getStackTraceString(e));
 			return null;
 		}
-
-		/*finally {
-			try {
-				fos.close();
-				bos.close();
-				bos = null;
-			} catch (IOException ex) {
-				ex.printStackTrace();
-				return null;
-			}
-		}
-
-		return bos;
-		*/
 	}
 
-	// TODO cleanup this method
 	public synchronized BufferedInputStream getStream4Upload(String fullFilePath) {
-
+	    Log.i(TAG, fullFilePath);
 	    File file = new File(fullFilePath);
-
 	    if(!file.exists() || !file.isFile() || !isFileInSharedDirs(file)) {
 	        return null;
 	    }
-
-	    /*
-		FileInputStream fis = null;
-		BufferedInputStream bis = null;
-
-	     */
-
 	    try {
 	        return new BufferedInputStream(new FileInputStream(file), BUFFER_SIZE);
-	        /*
-            fis = new FileInputStream(file);
-            bis = new BufferedInputStream(fis, BUFFER_SIZE);
-	         */
 	    }
 	    catch (IOException e) {
 	        Log.e(TAG, Log.getStackTraceString(e));
 	        return null;
 	    }
-
-	    /*
-        finally {
-            try {
-                fis.close();
-                bis.close();
-                bis = null;
-            }
-            catch (IOException ex) {
-                Log.e(TAG, Log.getStackTraceString(ex));
-                return null;
-            }
-        }
-
-		return bis;
-	     */
 	}
 
 	private synchronized boolean isFileInSharedDirs(File file) {
 	    if (!file.isFile())
 	        return false;
 
-	    String dirOfFile;
+	    String fileFullPath;
 	    try {
-	        dirOfFile = file.getParentFile().getCanonicalPath();
+	        fileFullPath = file.getCanonicalPath();
 	    }
 	    catch (IOException e) {
 	        Log.i(TAG, Log.getStackTraceString(e));
@@ -281,11 +225,10 @@ public class Storage implements IStorage  {
 	    }
 
 		for (String sharedDir : mSharedDirectories) {
-		    if (sharedDir.equals(dirOfFile))
+		    if (fileFullPath.startsWith(sharedDir))
 		        return true;
 		}
 
 		return false;
 	}
-
 }

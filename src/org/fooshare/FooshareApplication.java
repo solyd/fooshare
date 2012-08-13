@@ -9,21 +9,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.UUID;
 
 import org.fooshare.events.Event;
 import org.fooshare.network.AlljoynService;
+import org.fooshare.network.DownloadItem;
 import org.fooshare.network.DownloadService;
 import org.fooshare.network.FileServerService;
-import org.fooshare.network.IPeerService.FileItem;
+import org.fooshare.network.IPeerService.AlljoynFileItem;
 import org.fooshare.predicates.Predicate;
 import org.fooshare.storage.IStorage;
 import org.fooshare.storage.Storage;
 
 import android.app.Application;
 import android.content.Intent;
-import android.os.Environment;
 import android.os.ResultReceiver;
 import android.util.Log;
 
@@ -41,6 +41,9 @@ public class FooshareApplication extends Application {
 
     private final Object             _peerslock = new Object();
     private final Map<String, IPeer> _peers = new HashMap<String, IPeer>();
+
+    private final Object                   _dlItemsLock = new Object();
+    private final Collection<DownloadItem> _downloads = new LinkedList<DownloadItem>();
 
     // Determines how many concurrent downloads/uploads are allowed
     private int    _uploadSlots = 10;
@@ -127,8 +130,8 @@ public class FooshareApplication extends Application {
         return _storage.getMySharedFiles();
     }
 
-    public FileItem createFileItem(File f) {
-        FileItem fitem = new FileItem();
+    public AlljoynFileItem createAlljoynFileItem(File f) {
+        AlljoynFileItem fitem = new AlljoynFileItem();
 
         if (f == null || !f.exists() || !f.isFile())
             return null;
@@ -137,7 +140,7 @@ public class FooshareApplication extends Application {
             fitem.fullName = f.getCanonicalPath();
         }
         catch (IOException e) {
-            e.printStackTrace();
+            Log.i(TAG, Log.getStackTraceString(e));
         }
 
         fitem.sizeInBytes = f.length();
@@ -169,6 +172,18 @@ public class FooshareApplication extends Application {
         }
     }
 
+    /**
+     * usage example:
+     * _fooshare.getPeers(new Predicate<IPeer>() {
+     *      public boolean pred(IPeer ele) {
+     *          return ele instanceof AlljoynPeer;
+     *      }
+     *  });
+     *
+     *
+     * @param peerFinder
+     * @return
+     */
     public Collection<IPeer> getPeers(Predicate<IPeer> peerFinder) {
         synchronized (_peerslock) {
             Collection<IPeer> res = new ArrayList<IPeer>();
@@ -194,12 +209,33 @@ public class FooshareApplication extends Application {
     public void startDownloadService(FileItem fileItem, ResultReceiver resultReceiver) {
         Intent intent = new Intent(this, DownloadService.class);
 
-        intent.putExtra(DownloadService.FILENAME, fileItem.fullName);
-        intent.putExtra(DownloadService.FILESIZE, fileItem.sizeInBytes);
-        intent.putExtra(DownloadService.OWNERID, fileItem.ownerId);
+        intent.putExtra(DownloadService.FILENAME, fileItem.getFullPath());
+        intent.putExtra(DownloadService.FILESIZE, fileItem.getSizeInBytes());
+        intent.putExtra(DownloadService.OWNERID, fileItem.getOwnerId());
         intent.putExtra(DownloadService.RESULT_RECEIVER, resultReceiver);
 
         startService(intent);
+    }
+
+    public void addDownloadItem(DownloadItem dlItem) {
+        assert(dlItem != null);
+        synchronized (_dlItemsLock) {
+            _downloads.add(dlItem);
+        }
+    }
+
+    public void removeDownloadItem(DownloadItem dlItem) {
+        assert(dlItem != null);
+        synchronized (_dlItemsLock) {
+            _downloads.remove(dlItem);
+        }
+    }
+
+    public void stopAllDownloads() {
+        synchronized (_dlItemsLock) {
+            for (DownloadItem di : _downloads)
+                di.stopDownload();
+        }
     }
 
     public AlljoynService getAlljoynService() {
@@ -239,9 +275,12 @@ public class FooshareApplication extends Application {
         //_alljoynService.shutdown();
         _alljoynService = null;
         _fileServerService = null;
+        stopAllDownloads();
         stopService(new Intent(this, AlljoynService.class));
         stopService(new Intent(this, FileServerService.class));
     }
+
+
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

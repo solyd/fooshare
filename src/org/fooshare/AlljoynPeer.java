@@ -1,19 +1,23 @@
 package org.fooshare;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.alljoyn.bus.BusException;
 import org.fooshare.network.IPeerService;
-import org.fooshare.network.IPeerService.FileItem;
+import org.fooshare.network.IPeerService.AlljoynFileItem;
 
 import android.util.Log;
 
 public class AlljoynPeer implements IPeer {
     private static final String TAG = "AlljoynPeer";
 
-    protected String       _id;
-    protected String       _name;
-    protected int          _sessionId;
-    protected IPeerService _remotePeerProxy;
-    protected FileItem[]   _sharedFiles;
+    private String       _id;
+    private String       _name;
+    private int          _sessionId;
+    private IPeerService _remotePeerProxy;
+    //private AlljoynFileItem[]   _sharedFiles;
+    private Collection<FileItem> _sharedFiles = new ArrayList<FileItem>();
 
     public AlljoynPeer(String id, int sessionId, IPeerService remotePeerProxy) {
         _id = id;
@@ -22,8 +26,9 @@ public class AlljoynPeer implements IPeer {
 
         try {
             _name = _remotePeerProxy.peerName();
-            _sharedFiles = _remotePeerProxy.peerFiles();
-            int x = 5;
+            AlljoynFileItem[] peerFiles = _remotePeerProxy.peerFiles();
+            for (AlljoynFileItem pf : peerFiles)
+                _sharedFiles.add(new FileItem(pf.fullName, pf.sizeInBytes, pf.ownerId));
         }
         catch (BusException ignore) {
             Log.i(TAG, Log.getStackTraceString(ignore));
@@ -38,7 +43,7 @@ public class AlljoynPeer implements IPeer {
         return _name;
     }
 
-    public FileItem[] files() {
+    public Collection<FileItem> files() {
         return _sharedFiles;
     }
 

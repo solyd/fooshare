@@ -20,11 +20,11 @@ public class PeerService implements IPeerService, BusObject {
     }
 
 
-    public FileItem[] peerFiles() {
+    public AlljoynFileItem[] peerFiles() {
         File[] sharedFiles = _fooshare.myFiles();
-        FileItem[] res = new FileItem[sharedFiles.length];
+        AlljoynFileItem[] res = new AlljoynFileItem[sharedFiles.length];
         for (int i = 0, len = res.length; i < len; ++i)
-            res[i] = _fooshare.createFileItem(sharedFiles[i]);
+            res[i] = _fooshare.createAlljoynFileItem(sharedFiles[i]);
 
         return res;
     }
