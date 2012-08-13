@@ -236,7 +236,7 @@ private static final String TAG = "SearchActivity";
     public void sortButtonClicked(View view) {
 
         String txt = ((TextView) view).getText().toString();
-       
+
         // Here it is decided what kind of sort should occur and the arrows adjust
          if (txt.equals(NAME)) {
             if (sortFlag.equals(NAME)) {
@@ -285,16 +285,9 @@ private static final String TAG = "SearchActivity";
     }
 
     public void downloadCheckedClicked(View view) {
-       // List<FileItem> newList = new ArrayList<FileItem>();
-        final List<FileItem> list = mAdapter.getCheckedFiles();
+       final List<FileItem> list = mAdapter.getCheckedFiles();
         //here i'm sending it to Alex
-        for (int i = 0; i <  list.size(); i++) {
-            FileItem file =  list.get(i);
-            Log.i(TAG, file.getName());
-           
         }
-        // here i'm calling Alex's function /cancel
-    }
 }
 
 class ComparatorByName implements Comparator<FileItem> {
