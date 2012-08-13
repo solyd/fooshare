@@ -285,7 +285,6 @@ private static final String TAG = "SearchActivity";
 
     public void downloadCheckedClicked(View view) {
         List<FileItem> newList = new ArrayList<FileItem>();
-        newList.clear();
         List<FileItem> list = mAdapter.getData();
         for (int i = 0; i < list.size(); i++) {
             FileItem file = list.get(i);
