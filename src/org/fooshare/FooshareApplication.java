@@ -87,8 +87,8 @@ public class FooshareApplication extends Application {
      * running. For example - the Alljoyn Service and the File Server.
      */
     public void checkin() {
-        initAlljoynService();
-        initFileServerService();
+        //initAlljoynService();
+        //initFileServerService();
     }
 
     /**
@@ -111,8 +111,9 @@ public class FooshareApplication extends Application {
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    public final Event<IPeer> onPeerDiscovered = new Event<IPeer>();
-    public final Event<IPeer> onPeerLost = new Event<IPeer>();
+    public final Event<IPeer>       onPeerDiscovered = new Event<IPeer>();
+    public final Event<IPeer>       onPeerLost = new Event<IPeer>();
+    public final Event<List<IPeer>> onPeerListChanged = new Event<List<IPeer>>();
 
     /**
      * On first startup, the application will generate a unique id.
@@ -241,6 +242,16 @@ public class FooshareApplication extends Application {
         }
     }
 
+    public List<DownloadItem> getDownloads(Predicate<DownloadItem> dlfilter) {
+        synchronized (_dlItemsLock) {
+            List<DownloadItem> res = new LinkedList<DownloadItem>();
+            for (DownloadItem d : _downloads) {
+                res.add(new DownloadItem(d));
+            }
+            return res;
+        }
+    }
+
     public void stopAllDownloads() {
         synchronized (_dlItemsLock) {
             for (DownloadItem di : _downloads)
@@ -282,6 +293,7 @@ public class FooshareApplication extends Application {
     public void quit() {
         onPeerDiscovered.clear();
         onPeerLost.clear();
+        onPeerListChanged.clear();
         //_alljoynService.shutdown();
         _alljoynService = null;
         _fileServerService = null;

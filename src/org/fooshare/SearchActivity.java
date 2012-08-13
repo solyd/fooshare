@@ -29,7 +29,8 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
     private static final String TAG = "inSearchListEntryAdapter";
     Context context;
     int layoutResourceId;
-    List<FileItem> data = null;
+    List<FileItem> data ;
+    List<FileItem> checkedFiles;
 
     // Context - reference of the activity in which we will use the Adapter
     // class
@@ -42,10 +43,11 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
         this.layoutResourceId = layoutResourceId;
         this.context = context;
         this.data = arr;
+        this.checkedFiles = new ArrayList<FileItem>();
     }
 
-    public List<FileItem> getData() {
-        return data;
+    public List<FileItem> getCheckedFiles() {
+        return checkedFiles;
     }
 
     @Override
@@ -68,6 +70,9 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             FileItem file = (FileItem) holder.checkBox.getTag();
                             file.setSelected(buttonView.isChecked());
+                            if (file.isSelected())
+                            	checkedFiles.add(file);
+                            else checkedFiles.remove(file);
                         }
                     });
             row.setTag(holder);
@@ -182,7 +187,7 @@ private static final String TAG = "SearchActivity";
         mAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, filteredList);
         mSearchListView.setAdapter(mAdapter);
     }
-
+/*
     // My function for testing. I use it to create lists
     public ArrayList<FileItem> creatNewList() {
 
@@ -207,14 +212,14 @@ private static final String TAG = "SearchActivity";
     // This function is only a simulation of what is going to be in the
     // Application object.
     // It will actually receive only the predicate.
-    public ArrayList<FileItem> getSharedFiles(Predicate predicate, ArrayList<FileItem> list) {
+    public ArrayList<FileItem> getSharedFiles(Predicate<FileItem> predicate, ArrayList<FileItem> list) {
         ArrayList<FileItem> newList = new ArrayList<FileItem>();
-        newList.clear();
         for (FileItem file : list) {
             if (predicate.pred(file)) newList.add(file);
         }
         return newList;
     }
+    */
 
     public void sortFilteredList() {
         Log.d(TAG, "in sort");
@@ -228,16 +233,12 @@ private static final String TAG = "SearchActivity";
             Collections.reverse(filteredList);
     }
 
-    // findViewById(R.id.arrow2).setVisibility(View.INVISIBLE);
-
     public void sortButtonClicked(View view) {
 
         String txt = ((TextView) view).getText().toString();
-        // ImageView iv = null;
 
-        // Here it is decided what kind of sort should occur and the arrows
-        // adjust
-        if (txt.equals(NAME)) {
+        // Here it is decided what kind of sort should occur and the arrows adjust
+         if (txt.equals(NAME)) {
             if (sortFlag.equals(NAME)) {
                 sortFlag = RNAME;
                 ((ImageView) findViewById(R.id.arrow1)).setImageResource(R.drawable.arrow_down);
@@ -284,17 +285,9 @@ private static final String TAG = "SearchActivity";
     }
 
     public void downloadCheckedClicked(View view) {
-        List<FileItem> newList = new ArrayList<FileItem>();
-        newList.clear();
-        List<FileItem> list = mAdapter.getData();
-        for (int i = 0; i < list.size(); i++) {
-            FileItem file = list.get(i);
-            if (file.isSelected()) {
-                newList.add(file);
-            }
+       final List<FileItem> list = mAdapter.getCheckedFiles();
+        //here i'm sending it to Alex
         }
-        // here i'm calling Alex's function
-    }
 }
 
 class ComparatorByName implements Comparator<FileItem> {
