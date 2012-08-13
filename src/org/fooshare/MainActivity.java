@@ -17,12 +17,12 @@ public class MainActivity extends TabActivity {
         _fooshare = (FooshareApplication) getApplication();
 
         setContentView(R.layout.main);
-
+/*
         if ((_fooshare.storage().isRegistrationNeeded())) {
             Intent intentS = new Intent(MainActivity.this,RegistrationActivity.class);
         	startActivity(intentS);
         }
-
+*/
         Resources res = getResources(); // Resource object to get Drawables
         TabHost tabHost = getTabHost();  // The activity TabHost
         TabHost.TabSpec spec;  // Reusable TabSpec for each tab

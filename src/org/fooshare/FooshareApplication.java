@@ -87,8 +87,8 @@ public class FooshareApplication extends Application {
      * running. For example - the Alljoyn Service and the File Server.
      */
     public void checkin() {
-        initAlljoynService();
-        initFileServerService();
+        //initAlljoynService();
+        ///initFileServerService();
     }
 
     /**

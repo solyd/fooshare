@@ -29,7 +29,8 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
     private static final String TAG = "inSearchListEntryAdapter";
     Context context;
     int layoutResourceId;
-    List<FileItem> data = null;
+    List<FileItem> data ;
+    List<FileItem> checkedFiles;
 
     // Context - reference of the activity in which we will use the Adapter
     // class
@@ -42,10 +43,11 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
         this.layoutResourceId = layoutResourceId;
         this.context = context;
         this.data = arr;
+        this.checkedFiles = new ArrayList<FileItem>();
     }
 
-    public List<FileItem> getData() {
-        return data;
+    public List<FileItem> getCheckedFiles() {
+        return checkedFiles;
     }
 
     @Override
@@ -68,6 +70,9 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             FileItem file = (FileItem) holder.checkBox.getTag();
                             file.setSelected(buttonView.isChecked());
+                            if (file.isSelected())
+                            	checkedFiles.add(file);
+                            else checkedFiles.remove(file);
                         }
                     });
             row.setTag(holder);
@@ -280,14 +285,15 @@ private static final String TAG = "SearchActivity";
     }
 
     public void downloadCheckedClicked(View view) {
-        List<FileItem> newList = new ArrayList<FileItem>();
-        for (int i = 0; i <  filteredList.size(); i++) {
-            FileItem file =  filteredList.get(i);
-            if (file.isSelected()) {
-                newList.add(file);
-            }
+       // List<FileItem> newList = new ArrayList<FileItem>();
+        final List<FileItem> list = mAdapter.getCheckedFiles();
+        //here i'm sending it to Alex
+        for (int i = 0; i <  list.size(); i++) {
+            FileItem file =  list.get(i);
+            Log.i(TAG, file.getName());
+           
         }
-        // here i'm calling Alex's function
+        // here i'm calling Alex's function /cancel
     }
 }
 
