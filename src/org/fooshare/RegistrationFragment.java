@@ -16,11 +16,13 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,13 +47,8 @@ public class RegistrationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         
-    	Log.d(TAG, "onCreate is running");
-    	
-        // onCreateView() is a life cycle event that is unique to a Fragment. This is called when Android
-        // needs the layout for this Fragment. The call to LayoutInflater::inflate() simply takes the layout
-        // ID for the layout file, the parent view that will hold the layout, and an option to add the inflated
-        // view to the parent. This should always be false or an exception will be thrown. Android will add
-        // the view to the parent when necessary.
+    	Log.d(TAG, "onCreateView is running");
+
         View view = inflater.inflate(R.layout.registration_fragment, container, false);
         
         
@@ -62,10 +59,6 @@ public class RegistrationFragment extends Fragment {
 
         listItems = new ArrayList<String>(Arrays.asList(mFooshare.storage().getSharedDir()));
         adapter = new ArrayAdapter<String>(curr_activity, R.layout.small_list_text, listItems);
-        ListView lv_sharedDir = (ListView)view.findViewById(R.id.listView_uDir);
-        lv_sharedDir.setAdapter(adapter);
-        lv_sharedDir.setClickable(true);
-		lv_sharedDir.setOnItemLongClickListener(OnUDirItemClickListener);
 
         EditText editText;
 		editText = (EditText)view.findViewById(R.id.name_field);
@@ -80,48 +73,72 @@ public class RegistrationFragment extends Fragment {
     	if (new File(sdcard).exists()) {
     		mInitalPath = sdcard;
     	}
- 
         return view;
     }
-
     
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
 
-//	public void onCreate(Bundle savedInstanceState) {
-//		
-//    	super.onCreate(savedInstanceState);
-//
-//        setContentView(R.layout.registration_activity);
-//
-//        builder = new AlertDialog.Builder(this);
-//
-//        mFooshare = (FooshareApplication) getApplication();
-//
-//        listItems = new ArrayList<String>(Arrays.asList(mFooshare.storage().getSharedDir()));
-//        adapter = new ArrayAdapter<String>(this, R.layout.small_list_text, listItems);
-//        ListView lv_sharedDir = (ListView)findViewById(R.id.listView_uDir);
-//        lv_sharedDir.setAdapter(adapter);
-//        lv_sharedDir.setClickable(true);
-//		lv_sharedDir.setOnItemLongClickListener(OnUDirItemClickListener);
-//
-//        EditText editText;
-//		editText = (EditText)findViewById(R.id.name_field);
-//		editText.setText(mFooshare.storage().getNickName());
-//		editText = (EditText)findViewById(R.id.downloads_folder_field);
-//		if (mFooshare.storage().getDownloadDir() != "") {
-//			editText.setText(mFooshare.storage().getDownloadDir());
-//			editText.setTextColor(Color.BLACK);
-//		}
-//
-//    	String sdcard = Environment.getExternalStorageDirectory().getAbsolutePath();
-//    	if (new File(sdcard).exists()) {
-//    		mInitalPath = sdcard;
-//    	}
-//	}
+        ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
+        lv_sharedDir.setAdapter(adapter);
+        lv_sharedDir.setClickable(true);
+		lv_sharedDir.setOnItemLongClickListener(OnUDirItemClickListener);
+		
+		
+		Button nickNameOK = (Button)getActivity().findViewById(R.id.nick_ok);
+		nickNameOK.setOnClickListener(OnNicknameOKListener);		
+		
+		EditText downloadsFolder = (EditText)getActivity().findViewById(R.id.downloads_folder_field);
+		downloadsFolder.setOnClickListener(OnDownloadFolderOKListener);
+		
+		Button addUDir = (Button)getActivity().findViewById(R.id.button_download);
+		addUDir.setOnClickListener(OnAddUDirOKListener);
+    }
+    
+    OnClickListener OnAddUDirOKListener = new OnClickListener(){
 
+		public void onClick(View arg0) {
+			Log.d(TAG, "OnAddUDirOKListener is running");
+			
+	    	Intent fileExploreIntent = new Intent(FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
+					null, getActivity(), FileBrowserActivity.class );
+			fileExploreIntent.putExtra(FileBrowserActivity.startDirectoryParameter, mInitalPath);
+			startActivityForResult( fileExploreIntent, REQUEST_CODE_PICK_UPLOAD_DIR );
+		}};
+    
+    OnClickListener OnDownloadFolderOKListener = new OnClickListener(){
 
+		public void onClick(View arg0) {
+			Log.d(TAG, "OnDownloadFolderOKListener is running");
+
+	    	Intent fileExploreIntent = new Intent(FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
+									null, getActivity(), FileBrowserActivity.class );
+
+	    	fileExploreIntent.putExtra(FileBrowserActivity.startDirectoryParameter, mInitalPath);
+	     	startActivityForResult( fileExploreIntent, REQUEST_CODE_PICK_DIR );
+		}};
+    
+    OnClickListener OnNicknameOKListener = new OnClickListener(){
+
+		public void onClick(View arg0) {
+			Log.d(TAG, "OnNicknameOKListener is running");
+			
+			EditText editText = (EditText)getActivity().findViewById(R.id.name_field);
+			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+			Log.d(TAG, editText.getText().toString());
+
+	        String newNickname = editText.getText().toString();
+	        mFooshare.storage().setNickname(newNickname);
+			
+		}};
+    
 	OnItemLongClickListener OnUDirItemClickListener = new OnItemLongClickListener() {
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-			ListView lv_sharedDir = (ListView)arg1.findViewById(R.id.listView_uDir);
+			
+			ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
 		    final Object o = lv_sharedDir.getItemAtPosition(position);
 
 			builder.setMessage("Are you sure you want to remove " + o.toString() + " ?")
@@ -143,38 +160,6 @@ public class RegistrationFragment extends Fragment {
 			return true;
 		  }
 	   };
-
-
-	public void OnClick_UploadDir(View view){
-		Log.d(TAG, "OnClick_UploadDir is running");
-
-    	Intent fileExploreIntent = new Intent(FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
-								null, getActivity(), FileBrowserActivity.class );
-    	fileExploreIntent.putExtra(FileBrowserActivity.startDirectoryParameter, mInitalPath);
-     	startActivityForResult( fileExploreIntent, REQUEST_CODE_PICK_UPLOAD_DIR );
-	}
-
-	public void nickNameOkClicked(View view){
-
-		EditText editText = (EditText)view.findViewById(R.id.name_field);
-		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-		Log.d(TAG, editText.getText().toString());
-
-        String newNickname = editText.getText().toString();
-        mFooshare.storage().setNickname(newNickname);
-	}
-
-	public void downloadsFolderFieldClicked(View view){
-
-		Log.d(TAG, "downloadsFolderFieldClicked is running");
-
-    	Intent fileExploreIntent = new Intent(FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
-								null, getActivity(), FileBrowserActivity.class );
-
-    	fileExploreIntent.putExtra(FileBrowserActivity.startDirectoryParameter, mInitalPath);
-     	startActivityForResult( fileExploreIntent, REQUEST_CODE_PICK_DIR );
-	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -214,6 +199,3 @@ public class RegistrationFragment extends Fragment {
      	mFooshare.storage().setSharedDir(arr_UDirs);
 	}
 }
-
-
-

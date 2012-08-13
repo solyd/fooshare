@@ -29,18 +29,17 @@ public class MainActivity extends TabActivity {
         Intent intent;  // Reusable Intent for each tab
 
         // Create an Intent to launch an Activity for the tab (to be reused)
-        intent = new Intent().setClass(this, DownloadsActivity.class);
-
         // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("Downloads").setIndicator("Downloads",
-                          res.getDrawable(R.drawable.ic_tab_downloads))
+        intent = new Intent().setClass(this, SearchActivity.class);
+        spec = tabHost.newTabSpec("Search").setIndicator("Search",
+                          res.getDrawable(R.drawable.ic_tab_search))
                       .setContent(intent);
         tabHost.addTab(spec);
 
         // Do the same for the other tabs
-        intent = new Intent().setClass(this, SearchActivity.class);
-        spec = tabHost.newTabSpec("Search").setIndicator("Search",
-                          res.getDrawable(R.drawable.ic_tab_search))
+        intent = new Intent().setClass(this, DownloadsActivity.class);
+        spec = tabHost.newTabSpec("Downloads").setIndicator("Downloads",
+                          res.getDrawable(R.drawable.ic_tab_downloads))
                       .setContent(intent);
         tabHost.addTab(spec);
 
@@ -51,11 +50,11 @@ public class MainActivity extends TabActivity {
         tabHost.addTab(spec);
 
         intent = new Intent().setClass(this, DemoActivity.class);
-        spec = tabHost.newTabSpec("settings").setIndicator("Demo",
+        spec = tabHost.newTabSpec("Demo").setIndicator("Demo",
                           res.getDrawable(R.drawable.ic_launcher))
                       .setContent(intent);
         tabHost.addTab(spec);
 
-        tabHost.setCurrentTab(3);
+        tabHost.setCurrentTab(0);
     }
 }

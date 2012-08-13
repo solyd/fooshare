@@ -28,8 +28,7 @@
 		    android:text="OK"
    			android:id="@+id/nick_ok"
     		android:layout_width="wrap_content"
-    		android:layout_height="wrap_content"
-     		android:onClick="nickNameOkClicked"/>
+    		android:layout_height="wrap_content"/>
      	
 	</LinearLayout>
    		
@@ -46,8 +45,7 @@
 		android:textColor="#cdc9c9"
 		android:focusable="false"
 		android:clickable="true"
-		android:inputType="text"
-		android:onClick="downloadsFolderFieldClicked">
+		android:inputType="text">
 	</EditText>		
 		
 	<LinearLayout 
@@ -73,14 +71,14 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="Add..."
-	            android:onClick="OnClick_UploadDir" />
+	             />
     	</LinearLayout>
 	    
 	    
   		<ListView
         	android:id="@+id/listView_uDir"
         	android:layout_width="fill_parent"
-        	android:layout_height="wrap_content"/>
+        	android:layout_height="wrap_content" />
 	    
 	</LinearLayout>
      	     
