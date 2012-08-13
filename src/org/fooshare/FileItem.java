@@ -6,11 +6,13 @@ public class FileItem {
     private String _fullPath;
     private Long   _sizeInBytes;
     private String _ownerId;
+    private boolean _selected; //for the checkBox functionality
 
     public FileItem(String newPath, Long newSize,String newPeerId) {
         _fullPath = newPath;
         _sizeInBytes = newSize;
         _ownerId = newPeerId;
+        _selected = false;
     }
 
     public Long getSizeInBytes() {
@@ -57,5 +59,13 @@ public class FileItem {
     @Override
     public String toString() {
         return getName();
+    }
+
+    public void setSelected(boolean selected) {
+        _selected = selected;
+    }
+
+    public boolean isSelected() {
+        return _selected;
     }
 }

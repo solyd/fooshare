@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.fooshare.events.Event;
@@ -86,7 +87,6 @@ public class FooshareApplication extends Application {
      * running. For example - the Alljoyn Service and the File Server.
      */
     public void checkin() {
-        // TODO uncomment
         initAlljoynService();
         initFileServerService();
     }
@@ -204,6 +204,16 @@ public class FooshareApplication extends Application {
 
             return null;
         }
+    }
+
+    public List<FileItem> getAllSharedFiles(Predicate<FileItem> fileFilter) {
+        List<FileItem> res = new LinkedList<FileItem>();
+        synchronized (_peerslock) {
+            for (IPeer p : _peers.values())
+                res.addAll(p.files());
+        }
+
+        return res;
     }
 
     public void startDownloadService(FileItem fileItem, ResultReceiver resultReceiver) {

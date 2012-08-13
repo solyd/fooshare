@@ -2,10 +2,14 @@ package org.fooshare;
 
 import java.util.ArrayList;
 
+import org.fooshare.network.DownloadService;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 class DownloadsListEntry {
@@ -23,12 +28,15 @@ class DownloadsListEntry {
     public String eta;
     public String percentage;
 
+    public int progress;
+    public ProgressBar progressBar;
+
     /*
      * The constructor for an entry in the list of downloads name - the name of
      * the file fileType - "video","audio" or "text" - the icon of the file in
      * the list will be set according to this variable
      */
-    public DownloadsListEntry(String name, String fileType) {
+    public DownloadsListEntry(Context context, String name, String fileType) {
 
         fileName = name;
         eta = "ETA : Unknown ";
@@ -82,6 +90,7 @@ class DownloadsListEntryAdapter extends ArrayAdapter<DownloadsListEntry> {
             holder.fileName = (TextView) row.findViewById(R.id.fileName);
             holder.eta = (TextView) row.findViewById(R.id.eta);
             holder.percentage = (TextView) row.findViewById(R.id.percentage);
+            holder.progressBar = (ProgressBar) row.findViewById(R.id.progressbar);
             row.setTag(holder);
         }
         else {
@@ -93,6 +102,8 @@ class DownloadsListEntryAdapter extends ArrayAdapter<DownloadsListEntry> {
         holder.fileName.setText(entry.fileName);
         holder.eta.setText(entry.eta);
         holder.percentage.setText(entry.percentage);
+
+        holder.progressBar.setProgress(getItem(position).progress);
 
         return row;
     }
@@ -109,6 +120,7 @@ class DownloadsListEntryAdapter extends ArrayAdapter<DownloadsListEntry> {
         TextView fileName;
         TextView eta;
         TextView percentage;
+        ProgressBar progressBar;
     }
 }
 
@@ -122,10 +134,14 @@ public class DownloadsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.downloads_activity);
 
+
+
         mList = new ArrayList<DownloadsListEntry>();
-        mList.add(new DownloadsListEntry("FileName.something", "video"));
+        mList.add(new DownloadsListEntry(this, "FileName.something", "video"));
+
         mAdapter = new DownloadsListEntryAdapter(this, R.layout.list_downloads_entry, mList);
         mDownloadsListView = (ListView) findViewById(R.id.list_downloads);
+
         mDownloadsListView.setAdapter(mAdapter);
     }
 
@@ -133,8 +149,46 @@ public class DownloadsActivity extends Activity {
         final String TAG = "updateDownloadsList Tag";
         Log.d(TAG, "updateDownloadsList is running ");
 
-        new EntryAdditionClass().execute(new DownloadsListEntry("some file", "text"));
+        DownloadsListEntry ent = new DownloadsListEntry(this, "some file", "text");
+        mAdapter.add(ent);
+
+        mAdapter.notifyDataSetChanged();
+        DownloadReceiver dlrecv = new DownloadReceiver(new Handler(), ent);
+
+
+        new EntryAdditionClass(dlrecv).execute();
     }
+
+    private class DownloadReceiver extends ResultReceiver {
+        private static final String TAG = "DownloadReceiver";
+        private DownloadsListEntry _ent;
+
+        public DownloadReceiver(Handler handler, DownloadsListEntry ent) {
+            super(handler);
+            _ent = ent;
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+
+            int progress = resultData.getInt("progress");
+
+            /*
+            if (_ent == null || _ent.progressBar == null) {
+                Log.e(TAG, "Progress bar is null 2");
+                return;
+            }
+            */
+
+            Log.i(TAG, _ent.fileName);
+
+            _ent.progress = progress;
+            //_ent.progressBar.setProgress(progress);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
 
     /*
      * This class when initiated and it's execute method is ran, opens a new
@@ -147,9 +201,15 @@ public class DownloadsActivity extends Activity {
         final String TAG = "AsyncTask Tag";
         int i = 0;
 
+        private DownloadReceiver _dlrecv;
+
+        public EntryAdditionClass(DownloadReceiver dlrecv) {
+            _dlrecv = dlrecv;
+        }
+
         protected void onPostExecute(DownloadsListEntry newEntry) {
-            mAdapter.add(newEntry);
-            mAdapter.notifyDataSetChanged();
+            //mAdapter.add(newEntry);
+            //mAdapter.notifyDataSetChanged();
             Log.d(TAG, "onPostExecute is running");
             /*
              * TextView textView = (TextView)findViewById(R.id.count_label);
@@ -160,16 +220,22 @@ public class DownloadsActivity extends Activity {
 
         @Override
         protected DownloadsListEntry doInBackground(DownloadsListEntry... params) {
-            for (i = 0; i < 14; i++) {
+            int progress = 0;
+            for (i = 0; i < 19; i++) {
                 try {
                     Thread.sleep(1000);
+                    progress += 10;
+
+                    Bundle data = new Bundle();
+                    data.putInt("progress", progress);
+                    _dlrecv.send(0, data);
                 }
                 catch (InterruptedException e) {
                     Log.d(TAG, "There is an exception in doInBackground");
                 }
                 Log.d(TAG, "i = " + String.valueOf(i));
             }
-            return params[0];
+            return null;
         }
         /*
          * @Override protected void onProgressUpdate (Integer... values){
