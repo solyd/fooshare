@@ -182,7 +182,7 @@ private static final String TAG = "SearchActivity";
         mAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, filteredList);
         mSearchListView.setAdapter(mAdapter);
     }
-
+/*
     // My function for testing. I use it to create lists
     public ArrayList<FileItem> creatNewList() {
 
@@ -207,14 +207,14 @@ private static final String TAG = "SearchActivity";
     // This function is only a simulation of what is going to be in the
     // Application object.
     // It will actually receive only the predicate.
-    public ArrayList<FileItem> getSharedFiles(Predicate predicate, ArrayList<FileItem> list) {
+    public ArrayList<FileItem> getSharedFiles(Predicate<FileItem> predicate, ArrayList<FileItem> list) {
         ArrayList<FileItem> newList = new ArrayList<FileItem>();
-        newList.clear();
         for (FileItem file : list) {
             if (predicate.pred(file)) newList.add(file);
         }
         return newList;
     }
+    */
 
     public void sortFilteredList() {
         Log.d(TAG, "in sort");
@@ -228,16 +228,12 @@ private static final String TAG = "SearchActivity";
             Collections.reverse(filteredList);
     }
 
-    // findViewById(R.id.arrow2).setVisibility(View.INVISIBLE);
-
     public void sortButtonClicked(View view) {
 
         String txt = ((TextView) view).getText().toString();
-        // ImageView iv = null;
 
-        // Here it is decided what kind of sort should occur and the arrows
-        // adjust
-        if (txt.equals(NAME)) {
+        // Here it is decided what kind of sort should occur and the arrows adjust
+         if (txt.equals(NAME)) {
             if (sortFlag.equals(NAME)) {
                 sortFlag = RNAME;
                 ((ImageView) findViewById(R.id.arrow1)).setImageResource(R.drawable.arrow_down);
@@ -285,9 +281,10 @@ private static final String TAG = "SearchActivity";
 
     public void downloadCheckedClicked(View view) {
         List<FileItem> newList = new ArrayList<FileItem>();
-        List<FileItem> list = mAdapter.getData();
-        for (int i = 0; i < list.size(); i++) {
-            FileItem file = list.get(i);
+
+        for (int i = 0; i <  filteredList.size(); i++) {
+            FileItem file =  filteredList.get(i);
+
             if (file.isSelected()) {
                 newList.add(file);
             }
