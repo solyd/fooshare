@@ -1,6 +1,5 @@
 package org.fooshare;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.fooshare.network.DownloadItem;
@@ -23,15 +22,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class DownloadsActivity extends Activity {
-
     private DownloadItemAdapter _downloadsListAdapter;
     private ListView            _downloadsListView;
     private List<DownloadItem>  _downloadsList;
     private FooshareApplication _fooshare;
 
     class DownloadItemAdapter extends ArrayAdapter<DownloadItem> {
-        private static final String TAG = "DownloadItemAdapter";
-
         private Context            _context;
         private int                _layoutResourceId;
         private List<DownloadItem> _data;
@@ -114,8 +110,6 @@ public class DownloadsActivity extends Activity {
 
 
     private class DownloadReceiver extends ResultReceiver {
-        private static final String TAG = "DownloadReceiver";
-
         public DownloadReceiver(Handler handler) {
             super(handler);
         }

@@ -1,10 +1,10 @@
 package org.fooshare;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.fooshare.events.Delegate;
 import org.fooshare.network.DownloadService;
-import org.fooshare.network.IPeerService.AlljoynFileItem;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -66,6 +66,22 @@ private static final String TAG = "DemoActivity";
         }
     }
 
+    protected class PeerListChanged implements Delegate<List<IPeer>> {
+        public void invoke(final List<IPeer> newPeerList) {
+            handler.post(new Runnable() {
+                public void run() {
+                    _peerAdapter.clear();
+                    _fileAdapter.clear();
+
+                    for (IPeer p : newPeerList) {
+                        _peerAdapter.add(p.id());
+                        for (FileItem fi : p.files())
+                            _fileAdapter.add(fi);
+                    }
+                }
+            });
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,8 +101,11 @@ private static final String TAG = "DemoActivity";
         _peerListView.setAdapter(_peerAdapter);
         _fileListView.setAdapter(_fileAdapter);
 
+        /*
         _fooshare.onPeerDiscovered.subscribe(new PeerDiscovered());
         _fooshare.onPeerLost.subscribe(new PeerLost());
+        */
+        _fooshare.onPeerListChanged.subscribe(new PeerListChanged());
         _fooshare.checkin();
 
         // ++++++++++++++++++++++++++++++++++++++++
@@ -102,6 +121,7 @@ private static final String TAG = "DemoActivity";
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 FileItem f = (FileItem) _fileAdapter.getItem(position);
 
+                /*
                 _progressDialog = new ProgressDialog(DemoActivity.this);
                 _progressDialog.setCancelable(true);
                 _progressDialog.setMessage("Downloading " + f.toString());
@@ -109,7 +129,7 @@ private static final String TAG = "DemoActivity";
                 _progressDialog.setProgress(0);
                 _progressDialog.setMax(0);
                 _progressDialog.show();
-
+                 */
 
                 _fooshare.startDownloadService(f, new DownloadReceiver(new Handler()));
             }
