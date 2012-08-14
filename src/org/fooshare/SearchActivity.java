@@ -285,9 +285,9 @@ private static final String TAG = "SearchActivity";
     }
 
     public void downloadCheckedClicked(View view) {
-       final List<FileItem> list = mAdapter.getCheckedFiles();
+        final List<FileItem> list = mAdapter.getCheckedFiles();
         //here i'm sending it to Alex
-        }
+    }
 }
 
 class ComparatorByName implements Comparator<FileItem> {

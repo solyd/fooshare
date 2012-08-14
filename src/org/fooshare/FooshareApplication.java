@@ -150,10 +150,17 @@ public class FooshareApplication extends Application {
         return fitem;
     }
 
+    private void onPeerListChanged() {
+        List<IPeer> peersCopy = new ArrayList<IPeer>();
+        peersCopy.addAll(_peers.values());
+        onPeerListChanged.trigger(peersCopy);
+    }
+
     public void addPeer(IPeer peer) {
         synchronized (_peerslock) {
             _peers.put(peer.id(), peer);
             onPeerDiscovered.trigger(peer);
+            onPeerListChanged();
         }
     }
 
@@ -170,6 +177,7 @@ public class FooshareApplication extends Application {
 
             _peers.remove(target.id());
             onPeerLost.trigger(target);
+            onPeerListChanged();
         }
     }
 
@@ -185,9 +193,9 @@ public class FooshareApplication extends Application {
      * @param peerFinder
      * @return
      */
-    public Collection<IPeer> getPeers(Predicate<IPeer> peerFinder) {
+    public List<IPeer> getPeers(Predicate<IPeer> peerFinder) {
         synchronized (_peerslock) {
-            Collection<IPeer> res = new ArrayList<IPeer>();
+            List<IPeer> res = new ArrayList<IPeer>();
             for (IPeer p : _peers.values()) {
                 if (peerFinder.pred(p))
                     res.add(p);
