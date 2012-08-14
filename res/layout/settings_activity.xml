@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:noHistory="true">  
-   	        
-	<TextView
-		 android:id="@+id/textViewSSID"
-		 android:layout_width="wrap_content"
-		 android:layout_height="wrap_content" />
-    
+    android:layout_height="fill_parent">  
+   	  
+	<LinearLayout 
+	    android:id="@+id/SSIDLayout"
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+  		android:layout_width="fill_parent"
+   		android:layout_height="wrap_content"
+   		android:layout_alignParentTop="true"
+		android:orientation="horizontal">  
+     	
+     	<TextView 
+     		android:id="@+id/name_field"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="WiFi: "
+			/>
+		
+		<TextView
+			android:id="@+id/SSID_field"
+			
+			android:textColor="@android:color/white"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/WiFi_not_connected" />
+     	
+	</LinearLayout>
     	    
     <FrameLayout
         android:id="@+id/fragment_reg_content"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_below="@id/SSIDLayout">
 
     </FrameLayout>
-       
-
-     	  
      	      
 </RelativeLayout>

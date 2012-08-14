@@ -183,13 +183,15 @@ public class RegistrationFragment extends Fragment {
         }
 
 		if (requestCode == REQUEST_CODE_PICK_UPLOAD_DIR) {
-			adapter.add(newDir);
-
-	     	// update upload_dir in storage
-			UpdateSharedDir();
+			
+			if (adapter.getPosition(newDir) == -1) { //directory not in list
+			
+				adapter.add(newDir);
+				//update upload_dir in storage
+				UpdateSharedDir();
+			}
 		}
 	}
-
 
 	private void UpdateSharedDir()	{
      	String[] arr_UDirs = new String[adapter.getCount()];

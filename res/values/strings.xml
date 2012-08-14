@@ -8,8 +8,7 @@
     <string name="downloading">Downloading...</string>
     <string name="downloads">Downloads</string>
     <string name="updateListBtn">Demo</string>
-        
-    
     <string name="uploads">Uploads</string>
+    <string name="WiFi_not_connected">not connected</string>
 
 </resources>

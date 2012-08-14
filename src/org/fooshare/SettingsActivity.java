@@ -1,16 +1,24 @@
 package org.fooshare;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.widget.TextView;
 
 public class SettingsActivity extends FragmentActivity {
 
 	private static final String TAG = "SettingsActivity";
 	protected FooshareApplication mFooshare;
+	private BroadcastReceiver mBroadcastReceiver;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,25 +40,30 @@ public class SettingsActivity extends FragmentActivity {
         }
         
         
-//        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-//			
-//			@Override
-//			public void onReceive(Context context, Intent intent) {
-//				
-//		        // set WiFi network name
-//		        WifiManager wifiMgr = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-//		        WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-//		        String name = wifiInfo.getSSID();
-//		        
-//		        EditText editText = (EditText)findViewById(R.id.textViewSSID);
-//		        editText.setText(name);
-//			}
-//		};
-//		
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
-//		registerReceiver(broadcastReceiver, intentFilter);
+        mBroadcastReceiver = new BroadcastReceiver() {			
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				
+		        // set WiFi network name
+		        WifiManager wifiMgr = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		        WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+		        String name = wifiInfo.getSSID();
+		        
+		        if (name == null) {
+		        	name = getResources().getString(R.string.WiFi_not_connected);
+		        }
+		        
+		        TextView tvSSID = (TextView)findViewById(R.id.SSID_field);
+		        tvSSID.setText(name);
+			}
+		};
+		
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
+		registerReceiver(mBroadcastReceiver, intentFilter);
     }
     
 }

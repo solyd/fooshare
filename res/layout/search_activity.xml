@@ -6,14 +6,13 @@
            <RelativeLayout
            xmlns:android="http://schemas.android.com/apk/res/android"
            android:layout_width="fill_parent"
-           android:layout_height="0dp"
-           android:layout_weight="1"
+           android:layout_height="wrap_content"
            android:orientation="horizontal" >
     
     		<Button android:text="Search"
    				android:id="@+id/searchBtn"
     			android:layout_width="wrap_content"
-    			android:layout_height="match_parent"
+    			android:layout_height="wrap_content"
      			android:textColor ="#000080"
      			android:onClick="searchList"
      			android:layout_alignParentRight="true">
@@ -22,7 +21,7 @@
     	   
            <EditText android:id="@+id/search_field"
                 android:layout_width="fill_parent"
-				android:layout_height="match_parent"
+				android:layout_height="wrap_content"
 				android:inputType="text"
 				android:layout_toLeftOf="@+id/searchBtn" >
 		   </EditText>
@@ -34,7 +33,7 @@
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="0.5"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
  		
  		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   		 		 android:layout_width="wrap_content"
@@ -75,8 +74,8 @@
    				android:onClick="sortButtonClicked"
    				android:text = "Size"
    				android:gravity="center_vertical"
-   				>
-   			</TextView> 
+   				/>
+   		 
   			<ImageView
           		android:id="@+id/arrow2"
             	android:src="@drawable/arrow_up"
@@ -100,8 +99,8 @@
    				android:onClick="sortButtonClicked"
    				android:textColor="#f5f5f5"
    				android:gravity="center_vertical"
-   				android:text = "Type">
-   			</TextView> 
+   				android:text = "Type"/>
+   			
    		  	<ImageView
           		android:id="@+id/arrow3"
             	android:src="@drawable/arrow_up"
@@ -129,7 +128,5 @@
     		android:layout_weight="1"
     		android:layout_marginBottom="15dip">
  	</Button>
-      
-  
    	 	
 </LinearLayout>
