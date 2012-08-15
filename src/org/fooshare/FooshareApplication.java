@@ -15,7 +15,7 @@ import java.util.Map;
 
 import org.fooshare.events.Event;
 import org.fooshare.network.AlljoynService;
-import org.fooshare.network.DownloadItem;
+import org.fooshare.network.Download;
 import org.fooshare.network.DownloadService;
 import org.fooshare.network.FileServerService;
 import org.fooshare.network.IPeerService.AlljoynFileItem;
@@ -43,13 +43,12 @@ public class FooshareApplication extends Application {
     private final Object             _peerslock = new Object();
     private final Map<String, IPeer> _peers = new HashMap<String, IPeer>();
 
-    private final Object                   _dlItemsLock = new Object();
-    private final Collection<DownloadItem> _downloads = new LinkedList<DownloadItem>();
+    private final Object               _downloadsLock = new Object();
+    private final Collection<Download> _downloads = new LinkedList<Download>();
 
     // Determines how many concurrent downloads/uploads are allowed
     private int    _uploadSlots = 10;
     private int    _downloadSlots = 10;
-
 
     // This service facilitates all network related activities.
     private AlljoynService    _alljoynService;
@@ -87,8 +86,8 @@ public class FooshareApplication extends Application {
      * running. For example - the Alljoyn Service and the File Server.
      */
     public void checkin() {
-        //initAlljoynService();
-        //initFileServerService();
+        initAlljoynService();
+        initFileServerService();
     }
 
     /**
@@ -113,7 +112,9 @@ public class FooshareApplication extends Application {
 
     public final Event<IPeer>       onPeerDiscovered = new Event<IPeer>();
     public final Event<IPeer>       onPeerLost = new Event<IPeer>();
-    public final Event<List<IPeer>> onPeerListChanged = new Event<List<IPeer>>();
+
+    public final Event<List<IPeer>>    onPeerListChanged = new Event<List<IPeer>>();
+    public final Event<List<Download>> onDownloadsListChanged = new Event<List<Download>>();
 
     /**
      * On first startup, the application will generate a unique id.
@@ -150,17 +151,11 @@ public class FooshareApplication extends Application {
         return fitem;
     }
 
-    private void onPeerListChanged() {
-        List<IPeer> peersCopy = new ArrayList<IPeer>();
-        peersCopy.addAll(_peers.values());
-        onPeerListChanged.trigger(peersCopy);
-    }
-
     public void addPeer(IPeer peer) {
         synchronized (_peerslock) {
             _peers.put(peer.id(), peer);
             onPeerDiscovered.trigger(peer);
-            onPeerListChanged();
+            onPeerListChanged.trigger(new ArrayList<IPeer>(_peers.values()));
         }
     }
 
@@ -177,7 +172,7 @@ public class FooshareApplication extends Application {
 
             _peers.remove(target.id());
             onPeerLost.trigger(target);
-            onPeerListChanged();
+            onPeerListChanged.trigger(new ArrayList<IPeer>(_peers.values()));
         }
     }
 
@@ -229,41 +224,43 @@ public class FooshareApplication extends Application {
         Intent intent = new Intent(this, DownloadService.class);
 
         intent.putExtra(DownloadService.FILENAME, fileItem.getFullPath());
-        intent.putExtra(DownloadService.FILESIZE, fileItem.getSizeInBytes());
-        intent.putExtra(DownloadService.OWNERID, fileItem.getOwnerId());
+        intent.putExtra(DownloadService.FILESIZE, fileItem.sizeInBytes());
+        intent.putExtra(DownloadService.OWNERID, fileItem.ownerId());
         intent.putExtra(DownloadService.RESULT_RECEIVER, resultReceiver);
 
         startService(intent);
     }
 
-    public void addDownloadItem(DownloadItem dlItem) {
+    public void addDownload(Download dlItem) {
         assert(dlItem != null);
-        synchronized (_dlItemsLock) {
+        synchronized (_downloadsLock) {
             _downloads.add(dlItem);
+            onDownloadsListChanged.trigger(new ArrayList<Download>(_downloads));
         }
     }
 
-    public void removeDownloadItem(DownloadItem dlItem) {
+    public void removeDownload(Download dlItem) {
         assert(dlItem != null);
-        synchronized (_dlItemsLock) {
+        synchronized (_downloadsLock) {
             _downloads.remove(dlItem);
         }
     }
 
-    public List<DownloadItem> getDownloads(Predicate<DownloadItem> dlfilter) {
-        synchronized (_dlItemsLock) {
-            List<DownloadItem> res = new LinkedList<DownloadItem>();
-            for (DownloadItem d : _downloads) {
-                res.add(new DownloadItem(d));
+    public List<Download> getDownloads(Predicate<Download> dlfilter) {
+        synchronized (_downloadsLock) {
+            List<Download> res = new LinkedList<Download>();
+            for (Download d : _downloads) {
+                if (dlfilter.pred(d))
+                    res.add(d);
             }
             return res;
         }
     }
 
     public void stopAllDownloads() {
-        synchronized (_dlItemsLock) {
-            for (DownloadItem di : _downloads)
-                di.stopDownload();
+        synchronized (_downloadsLock) {
+            for (Download di : _downloads)
+                di.stop();
         }
     }
 
@@ -301,7 +298,9 @@ public class FooshareApplication extends Application {
     public void quit() {
         onPeerDiscovered.clear();
         onPeerLost.clear();
+
         onPeerListChanged.clear();
+        onDownloadsListChanged.clear();
         //_alljoynService.shutdown();
         _alljoynService = null;
         _fileServerService = null;

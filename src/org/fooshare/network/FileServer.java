@@ -42,7 +42,7 @@ public class FileServer {
                     }
                 }
                 catch (IOException e) {
-                    Log.i(TAG, Log.getStackTraceString(e));
+                    Log.i(TAG, "File server shutting down now...");
                 }
             }
         });

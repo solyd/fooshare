@@ -2,16 +2,16 @@ package org.fooshare;
 
 import java.util.List;
 
-import org.fooshare.network.DownloadItem;
+import org.fooshare.events.Delegate;
+import org.fooshare.network.Download;
 import org.fooshare.predicates.Predicate;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,15 +24,33 @@ import android.widget.TextView;
 public class DownloadsActivity extends Activity {
     private DownloadItemAdapter _downloadsListAdapter;
     private ListView            _downloadsListView;
-    private List<DownloadItem>  _downloadsList;
+    private List<Download>      _downloadsList;
     private FooshareApplication _fooshare;
 
-    class DownloadItemAdapter extends ArrayAdapter<DownloadItem> {
-        private Context            _context;
-        private int                _layoutResourceId;
-        private List<DownloadItem> _data;
+    private Handler _uiHandler = new Handler(Looper.getMainLooper());
 
-        public DownloadItemAdapter(Context context, int layoutResourceId, List<DownloadItem> arr) {
+    private class DownloadListChanged implements Delegate<List<Download>> {
+        public void invoke(final List<Download> newDownloadsList) {
+            _uiHandler.post(new Runnable() {
+                public void run() {
+                    _downloadsList.clear();
+                    for (Download di : newDownloadsList) {
+                        di.setUpdateReceiver(new DownloadUpdateReceiver(new Handler()));
+                        _downloadsList.add(di);
+                    }
+
+                    _downloadsListAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    private class DownloadItemAdapter extends ArrayAdapter<Download> {
+        private Context        _context;
+        private int            _layoutResourceId;
+        private List<Download> _data;
+
+        public DownloadItemAdapter(Context context, int layoutResourceId, List<Download> arr) {
             super(context, layoutResourceId, arr);
 
             _layoutResourceId = layoutResourceId;
@@ -62,16 +80,32 @@ public class DownloadsActivity extends Activity {
                 holder = (DownloadEntryHolder) row.getTag();
             }
 
-            DownloadItem entry = getItem(position);
+            Download dlitem = getItem(position);
+            FileItem fitem = dlitem.getFile();
+            int progressInPercent = dlitem.getPercentageProgress();
 
-            holder.icon.setImageResource(entry.iconTypeId);
-            holder.fileName.setText(entry.fileName);
+            holder.icon.setImageResource(determineIconId(fitem));
+            holder.fileName.setText(fitem.name());
             holder.eta.setText("ETA_TODO");
-            holder.percentage.setText(String.format("%d", entry.getPercentageProgress()));
-            holder.progressBar.setMax((int) entry.fileSize);
-            holder.progressBar.setProgress(entry.progress);
+            holder.percentage.setText(String.format("%d", progressInPercent));
+            holder.progressBar.setMax(100);
+            holder.progressBar.setProgress(progressInPercent);
 
             return row;
+        }
+
+        private int determineIconId(FileItem fileItem) {
+            switch (fileItem.category()) {
+            case VIDEO:
+                return R.drawable.video_icon;
+            case TEXT:
+                return R.drawable.text_icon;
+            case AUDIO:
+                return R.drawable.audio_icon;
+            default:
+                // TODO have a binary icon
+                return R.drawable.text_icon;
+            }
         }
 
         class DownloadEntryHolder {
@@ -83,34 +117,50 @@ public class DownloadsActivity extends Activity {
         }
     }
 
+
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.downloads_activity);
         _fooshare = (FooshareApplication) getApplication();
 
-        _downloadsList = _fooshare.getDownloads(new Predicate<DownloadItem>() {
-            public boolean pred(DownloadItem ele) {
+        _downloadsList = _fooshare.getDownloads(new Predicate<Download>() {
+            public boolean pred(Download ele) {
                 return true;
             }
         });
+
+        for (Download d : _downloadsList)
+            d.setUpdateReceiver(new DownloadUpdateReceiver(new Handler()));
+
         _downloadsListAdapter = new DownloadItemAdapter(this, R.layout.list_downloads_entry, _downloadsList);
         _downloadsListView = (ListView) findViewById(R.id.list_downloads);
         _downloadsListView.setAdapter(_downloadsListAdapter);
+
+        _fooshare.onDownloadsListChanged.subscribe(new DownloadListChanged());
     }
 
     @Override
     protected void onResume() {
+        super.onResume();
 
+        _downloadsList = _fooshare.getDownloads(new Predicate<Download>() {
+            public boolean pred(Download ele) {
+                return true;
+            }
+        });
 
+        _downloadsListAdapter = new DownloadItemAdapter(this, R.layout.list_downloads_entry, _downloadsList);
+        _downloadsListView.setAdapter(_downloadsListAdapter);
     }
 
     public void onDemoClick(View view) {
     }
 
+    public class DownloadUpdateReceiver extends ResultReceiver {
 
-
-    private class DownloadReceiver extends ResultReceiver {
-        public DownloadReceiver(Handler handler) {
+        public DownloadUpdateReceiver(Handler handler) {
             super(handler);
         }
 
@@ -119,62 +169,5 @@ public class DownloadsActivity extends Activity {
             super.onReceiveResult(resultCode, resultData);
             _downloadsListAdapter.notifyDataSetChanged();
         }
-    }
-
-
-    /*
-     * This class when initiated and it's execute method is ran, opens a new
-     * thread which adds another entry to the list that is managed by the
-     * Downloads activity
-     */
-
-    private class EntryAdditionClass extends
-            AsyncTask<DownloadItem, Integer, DownloadItem> {
-
-        final String TAG = "AsyncTask Tag";
-        int i = 0;
-
-        private DownloadReceiver _dlrecv;
-
-        public EntryAdditionClass(DownloadReceiver dlrecv) {
-            _dlrecv = dlrecv;
-        }
-
-        protected void onPostExecute(DownloadItem newEntry) {
-            //mAdapter.add(newEntry);
-            //mAdapter.notifyDataSetChanged();
-            Log.d(TAG, "onPostExecute is running");
-            /*
-             * TextView textView = (TextView)findViewById(R.id.count_label);
-             * Log.d(TAG, textView.getText().toString());
-             * textView.setText(String.valueOf(i));
-             */
-        }
-
-        @Override
-        protected DownloadItem doInBackground(DownloadItem... params) {
-            int progress = 0;
-            for (i = 0; i < 19; i++) {
-                try {
-                    Thread.sleep(1000);
-                    progress += 10;
-
-                    Bundle data = new Bundle();
-                    data.putInt("progress", progress);
-                    _dlrecv.send(0, data);
-                }
-                catch (InterruptedException e) {
-                    Log.d(TAG, "There is an exception in doInBackground");
-                }
-                Log.d(TAG, "i = " + String.valueOf(i));
-            }
-            return null;
-        }
-        /*
-         * @Override protected void onProgressUpdate (Integer... values){
-         * TextView textView = (TextView)this.findViewById(R.id.count_label);
-         *
-         * }
-         */
     }
 }
