@@ -220,13 +220,12 @@ public class FooshareApplication extends Application {
         return res;
     }
 
-    public void startDownloadService(FileItem fileItem, ResultReceiver resultReceiver) {
+    public void startDownloadService(FileItem fileItem) {
         Intent intent = new Intent(this, DownloadService.class);
 
         intent.putExtra(DownloadService.FILENAME, fileItem.getFullPath());
         intent.putExtra(DownloadService.FILESIZE, fileItem.sizeInBytes());
         intent.putExtra(DownloadService.OWNERID, fileItem.ownerId());
-        intent.putExtra(DownloadService.RESULT_RECEIVER, resultReceiver);
 
         startService(intent);
     }

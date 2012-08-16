@@ -28,6 +28,7 @@ public class DownloadsActivity extends Activity {
     private FooshareApplication _fooshare;
 
     private Handler _uiHandler = new Handler(Looper.getMainLooper());
+    private DownloadUpdateReceiver _updateReceiver = new DownloadUpdateReceiver(new Handler());
 
     private class DownloadListChanged implements Delegate<List<Download>> {
         public void invoke(final List<Download> newDownloadsList) {
@@ -35,7 +36,7 @@ public class DownloadsActivity extends Activity {
                 public void run() {
                     _downloadsList.clear();
                     for (Download di : newDownloadsList) {
-                        di.setUpdateReceiver(new DownloadUpdateReceiver(new Handler()));
+                        di.setUpdateReceiver(_updateReceiver);
                         _downloadsList.add(di);
                     }
 
@@ -132,7 +133,7 @@ public class DownloadsActivity extends Activity {
         });
 
         for (Download d : _downloadsList)
-            d.setUpdateReceiver(new DownloadUpdateReceiver(new Handler()));
+            d.setUpdateReceiver(_updateReceiver);
 
         _downloadsListAdapter = new DownloadItemAdapter(this, R.layout.list_downloads_entry, _downloadsList);
         _downloadsListView = (ListView) findViewById(R.id.list_downloads);
@@ -150,6 +151,8 @@ public class DownloadsActivity extends Activity {
                 return true;
             }
         });
+        for (Download d : _downloadsList)
+            d.setUpdateReceiver(_updateReceiver);
 
         _downloadsListAdapter = new DownloadItemAdapter(this, R.layout.list_downloads_entry, _downloadsList);
         _downloadsListView.setAdapter(_downloadsListAdapter);

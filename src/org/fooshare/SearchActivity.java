@@ -255,7 +255,7 @@ public class SearchActivity extends Activity {
     public void downloadCheckedClicked(View view) {
         final List<FileItem> checkedItems = mSearchListAdapter.getCheckedFiles();
         for (FileItem fi : checkedItems) {
-            _fooshare.startDownloadService(fi, null);
+            _fooshare.startDownloadService(fi);
             fi.setSelected(false);
         }
         mSearchListAdapter.notifyDataSetChanged();

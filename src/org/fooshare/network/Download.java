@@ -170,8 +170,7 @@ public class Download implements Runnable {
                     // publish progress to ui
                     synchronized (_updateLock) {
                         if (_updateReceiver != null) {
-                            Log.d(TAG, "updating progress");
-                            _updateReceiver.send(0, new Bundle());
+                            _updateReceiver.send(0, null);
                         }
                     }
                 }

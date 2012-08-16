@@ -35,7 +35,7 @@
    		   <TextView android:id="@+id/eta"
      		  	android:layout_width="wrap_content"
       			android:layout_height="wrap_content"
-      		  	android:textSize="13dp"
+      		  	android:textSize="11dp"
       		  	android:textColor="#f5f5f5"/> 
       		  	   		  
       </LinearLayout>

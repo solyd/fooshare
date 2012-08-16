@@ -23,10 +23,6 @@ public class DownloadService extends IntentService {
     public static final String FILENAME        = "fileName";
     public static final String FILESIZE        = "fileSize";
     public static final String OWNERID         = "ownerId";
-    public static final String RESULT_RECEIVER = "resultReceiver";
-
-    public static final String PROGRESS_DOWN = "downloaded";
-    public static final String PROGRESS_LEFT = "leftToDownload";
 
     public DownloadService() {
         super("DownloadService");
@@ -39,7 +35,6 @@ public class DownloadService extends IntentService {
         String ownerId = intent.getStringExtra(OWNERID);
         FileItem fileItem = new FileItem(fileName, fileSize, ownerId);
         FooshareApplication fooshare = (FooshareApplication) getApplication();
-        ResultReceiver resultReceiver = (ResultReceiver) intent.getParcelableExtra(RESULT_RECEIVER);
 
         Log.i(TAG, String.format("(DL Service) Downloading %s from %s", fileName, ownerId));
 

@@ -131,7 +131,7 @@ private static final String TAG = "DemoActivity";
                 _progressDialog.show();
                  */
 
-                _fooshare.startDownloadService(f, new DemoDownloadReceiver(new Handler()));
+                _fooshare.startDownloadService(f);
             }
         });
     }
@@ -147,11 +147,12 @@ private static final String TAG = "DemoActivity";
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
 
+            /*
             long downloaded = resultData.getLong(DownloadService.PROGRESS_DOWN);
             long total = resultData.getLong(DownloadService.PROGRESS_LEFT);
             _progressDialog.setMax((int) total);
             _progressDialog.setProgress((int) downloaded);
-
+             */
 
             /*
             if (downloaded == total) {
