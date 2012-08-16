@@ -7,13 +7,15 @@ import android.os.Bundle;
 import android.widget.TabHost;
 
 public class MainTabActivity extends TabActivity {
-    
+
 	protected FooshareApplication _fooshare;
 
-	public static final String TAB_SEARCH    = "Search";
-	public static final String TAB_DOWNLOADS = "Downloads";
-	public static final String TAB_SETTINGS  = "Settings";
-	public static final String TAB_DEMO      = "Demo";
+	public final String TAB_SEARCH = getResources().getString(R.string.SEARCH_TAB_TAG);
+	public final String TAB_DOWNLOADS = getResources().getString(R.string.DOWNLOADS_TAB_TAG);
+	public final String TAB_PEERS = getResources().getString(R.string.PEERS_TAB_TAG);
+	public final String TAB_SETTINGS  = getResources().getString(R.string.SETTINGS_TAB_TAG);
+
+	public final String TAB_DEMO      = "Demo";
 
     /** Called when the activity is first created. */
     @Override
@@ -36,30 +38,36 @@ public class MainTabActivity extends TabActivity {
         // Create an Intent to launch an Activity for the tab (to be reused)
         // Initialize a TabSpec for each tab and add it to the TabHost
         intent = new Intent().setClass(this, SearchActivity.class);
-        spec = tabHost.newTabSpec(TAB_SEARCH).
-                setIndicator("Search", res.getDrawable(R.drawable.ic_tab_search))
+        spec = tabHost.newTabSpec(TAB_SEARCH)
+                .setIndicator(TAB_SEARCH, res.getDrawable(R.drawable.ic_tab_search))
                 .setContent(intent);
         tabHost.addTab(spec);
 
         // Do the same for the other tabs
         intent = new Intent().setClass(this, DownloadsActivity.class);
         spec = tabHost.newTabSpec(TAB_DOWNLOADS)
-                .setIndicator("Downloads", res.getDrawable(R.drawable.ic_tab_downloads))
+                .setIndicator(TAB_DOWNLOADS, res.getDrawable(R.drawable.ic_tab_downloads))
                 .setContent(intent);
         tabHost.addTab(spec);
 
         intent = new Intent().setClass(this, SettingsActivity.class);
         spec = tabHost.newTabSpec(TAB_SETTINGS)
-                .setIndicator("Settings", res.getDrawable(R.drawable.ic_tab_settings))
+                .setIndicator(TAB_SETTINGS,res.getDrawable(R.drawable.ic_tab_settings))
                 .setContent(intent);
         tabHost.addTab(spec);
 
-        intent = new Intent().setClass(this, DemoActivity.class);
-        spec = tabHost.newTabSpec(TAB_DEMO)
-                .setIndicator("Demo", res.getDrawable(R.drawable.ic_launcher))
+        intent = new Intent().setClass(this, PeersActivity.class);
+        spec = tabHost.newTabSpec(TAB_PEERS)
+                .setIndicator(TAB_PEERS, res.getDrawable(R.drawable.ic_tab_settings))
                 .setContent(intent);
         tabHost.addTab(spec);
 
-        tabHost.setCurrentTabByTag(TAB_DEMO);
+//        intent = new Intent().setClass(this, DemoActivity.class);
+//        spec = tabHost.newTabSpec(TAB_DEMO)
+//                .setIndicator("Demo", res.getDrawable(R.drawable.ic_launcher))
+//                .setContent(intent);
+//        tabHost.addTab(spec);
+
+        tabHost.setCurrentTabByTag(TAB_PEERS);
     }
 }

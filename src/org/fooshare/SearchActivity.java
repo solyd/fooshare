@@ -5,14 +5,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.fooshare.predicates.PeerIdFilePredicate;
 import org.fooshare.predicates.Predicate;
 import org.fooshare.predicates.SubStringPredicate;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -139,11 +138,19 @@ public class SearchActivity extends Activity {
         Log.d(TAG, "onResume");
         super.onResume();
 
-        mFileList = _fooshare.getAllSharedFiles(new Predicate<FileItem>() {
-            public boolean pred(FileItem ele) {
-                return true;
-            }
-        });
+        IPeer selectedPeer = _fooshare.getSelectedPeer();
+        if (selectedPeer != null) {
+            _fooshare.setSelectedPeer(null);
+            mFileList = _fooshare.getAllSharedFiles(new PeerIdFilePredicate(selectedPeer));
+        }
+        else {
+            mFileList = _fooshare.getAllSharedFiles(new Predicate<FileItem>() {
+                public boolean pred(FileItem ele) {
+                    return true;
+                }
+            });
+        }
+
         sortFileList();
         mSearchListAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, mFileList);
         mSearchListView.setAdapter(mSearchListAdapter);
@@ -260,7 +267,7 @@ public class SearchActivity extends Activity {
         }
         mSearchListAdapter.notifyDataSetChanged();
 
-        ((TabHost) getParent().findViewById(android.R.id.tabhost)).setCurrentTabByTag(MainTabActivity.TAB_DOWNLOADS);
+        ((TabHost) getParent().findViewById(android.R.id.tabhost)).setCurrentTabByTag(getResources().getString(R.string.DOWNLOADS_TAB_TAG));
     }
 
     /*

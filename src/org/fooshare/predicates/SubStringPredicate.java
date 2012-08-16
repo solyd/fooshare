@@ -14,12 +14,7 @@ public class SubStringPredicate implements Predicate<FileItem> {
     }
 
     public boolean pred(FileItem fileItem) {
-        if (fileItem.name().toUpperCase().contains(_substring.toUpperCase())) {
-            Log.d(TAG, fileItem.name() + " contains " + _substring);
-            return true;
-        }
-
-        Log.d(TAG, fileItem.name() + " does not contain " + _substring);
-        return false;
+        return fileItem.name().toUpperCase().contains(_substring.toUpperCase());
     }
 }
+

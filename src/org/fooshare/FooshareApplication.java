@@ -25,7 +25,6 @@ import org.fooshare.storage.Storage;
 
 import android.app.Application;
 import android.content.Intent;
-import android.os.ResultReceiver;
 import android.util.Log;
 
 public class FooshareApplication extends Application {
@@ -54,6 +53,19 @@ public class FooshareApplication extends Application {
     private AlljoynService    _alljoynService;
     private FileServerService _fileServerService;
     private IStorage          _storage;
+
+    // This is the peer that was selected in the Peers activity.
+    // This is needed in order to show only this peers files in the
+    // Search activty.
+    private IPeer _selectedPeer = null;
+
+    public void setSelectedPeer(IPeer peer) {
+        _selectedPeer = peer;
+    }
+
+    public IPeer getSelectedPeer() {
+        return _selectedPeer;
+    }
 
     @Override
     public void onCreate() {
