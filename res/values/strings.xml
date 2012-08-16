@@ -10,5 +10,9 @@
     <string name="updateListBtn">Demo</string>
     <string name="uploads">Uploads</string>
     <string name="WiFi_not_connected">not connected</string>
-
+	<string name="SEARCH_TAB_TAG">Search</string>
+	<string name="DOWNLOADS_TAB_TAG">Downloads</string>
+	<string name="PEERS_TAB_TAG">Peers</string>
+	<string name="SETTINGS_TAB_TAG">Settings</string>
+	
 </resources>

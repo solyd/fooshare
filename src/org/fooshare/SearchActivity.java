@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.fooshare.predicates.PeerIdFilePredicate;
 import org.fooshare.predicates.Predicate;
 import org.fooshare.predicates.SubStringPredicate;
 
@@ -134,6 +135,12 @@ private static final String TAG = "SearchActivity";
     protected void onResume() {
         Log.i(TAG, "onResume of search activity");
         super.onResume();
+        
+        IPeer chosenPeer = _fooshare.getChosenPeer(); 
+        if (chosenPeer != null) {
+        	_fooshare.setChosenPeer(null);
+        	searchByPeer(chosenPeer);
+        }
     }
 
 
@@ -187,6 +194,18 @@ private static final String TAG = "SearchActivity";
         mAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, filteredList);
         mSearchListView.setAdapter(mAdapter);
     }
+    
+    public void searchByPeer(IPeer peer) {
+    	
+    	Predicate<FileItem> peerPred = new PeerIdFilePredicate(peer); 
+    	
+		filteredList = _fooshare.getAllSharedFiles(peerPred);
+
+        sortFilteredList();
+        mAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, filteredList);
+        mSearchListView.setAdapter(mAdapter);
+    }
+    
 /*
     // My function for testing. I use it to create lists
     public ArrayList<FileItem> creatNewList() {

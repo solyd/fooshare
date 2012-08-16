@@ -55,6 +55,8 @@ public class FooshareApplication extends Application {
     private AlljoynService    _alljoynService;
     private FileServerService _fileServerService;
     private IStorage          _storage;
+    
+    private IPeer	_chosenPeer = null;
 
     @Override
     public void onCreate() {
@@ -66,6 +68,15 @@ public class FooshareApplication extends Application {
         checkin();
     }
 
+    public void setChosenPeer(IPeer peer){
+    	_chosenPeer = peer;
+    }
+
+    public IPeer getChosenPeer(){
+    	return _chosenPeer;
+    }
+    
+    
     /**
      * When the alljoyn service is up and running it registers itself with
      * FooshareApplication, so that FooshareApplication will be able to use it
