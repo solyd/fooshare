@@ -8,7 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
@@ -29,7 +31,7 @@ public class Storage implements IStorage  {
     protected static final String NO_VALUE          = "";
     protected static final int BUFFER_SIZE          = 4096; // bytes
 
-	private String[] mSharedDirectories;
+    private Set<String> mSharedDirectories = new HashSet<String>();
 	private volatile String mDownloadDirectory;
 	private volatile String mUid = "";
 	private volatile String mNickname = "";
@@ -67,10 +69,12 @@ public class Storage implements IStorage  {
 		String tempSharedDirectories = "";
 		tempSharedDirectories = mPrefSettings.getString(SHARED_DIR_NAME, NO_VALUE);
 		if (tempSharedDirectories == NO_VALUE) {
-			mSharedDirectories = new String[0];
+			mSharedDirectories = new HashSet<String>();
 		}
 		else {
-			mSharedDirectories = tempSharedDirectories.split(SHARED_DIR_SEP);
+		    String[] sharedDirs = tempSharedDirectories.split(SHARED_DIR_SEP);
+			for (String d : sharedDirs)
+			    mSharedDirectories.add(d);
 		}
 		//-------------------------------------------------------------
 
@@ -121,18 +125,17 @@ public class Storage implements IStorage  {
 
 	public synchronized boolean setSharedDir(String[] _sharedDir) {
 		StringBuilder sb = new StringBuilder();
+		mSharedDirectories.clear();
 
 		if (mDownloadDirectory != null)
-		    sb.append(mDownloadDirectory).append(SHARED_DIR_SEP);
+		    mSharedDirectories.add(mDownloadDirectory);
 
 		for (int i = 0; i < _sharedDir.length; i++) {
-			sb.append(_sharedDir[i]).append(SHARED_DIR_SEP);
+			if (mSharedDirectories.add(_sharedDir[i]))
+			    sb.append(_sharedDir[i]).append(SHARED_DIR_SEP);
 		}
-		if (savePrefString(SHARED_DIR_NAME, sb.toString())) {
-			mSharedDirectories = _sharedDir;
-			return true;
-		}
-		return false;
+
+		return savePrefString(SHARED_DIR_NAME, sb.toString());
 	}
 
 	/**
@@ -171,7 +174,7 @@ public class Storage implements IStorage  {
 
 
 	public synchronized String[] getSharedDir() {
-		return mSharedDirectories;
+		return mSharedDirectories.toArray(new String[0]);
 	}
 
 
