@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.fooshare.R;
 import org.fooshare.events.Delegate;
+
 import org.fooshare.predicates.PeerIdFilePredicate;
 import org.fooshare.predicates.Predicate;
 import org.fooshare.predicates.SubStringPredicate;
@@ -76,10 +77,12 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     FileItem file = (FileItem) holder.checkBox.getTag();
                     file.setSelected(buttonView.isChecked());
-                    if (file.isSelected())
-                        checkedFiles.add(file);
-                    else
+
+                    boolean isFileInCheckedList = checkedFiles.contains(file);
+                    if (isFileInCheckedList && !file.isSelected())
                         checkedFiles.remove(file);
+                    else if (!isFileInCheckedList && file.isSelected())
+                        checkedFiles.add(file);
                 }
             });
             row.setTag(holder);
