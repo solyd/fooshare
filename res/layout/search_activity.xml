@@ -2,37 +2,54 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">    
-           <RelativeLayout
+    android:orientation="vertical">  
+    
+   		<TextView 
+    		android:id="@+id/peers_number"
+			android:layout_width="wrap_content"
+ 			android:layout_height="wrap_content"
+ 			android:textColor="#f5f5f5"
+ 			android:clickable="true"
+ 			android:ellipsize="end"
+ 			android:onClick="peersNumberClicked"
+ 			android:text = "Peers Number: "
+   			android:textSize="14sp"
+   		    android:gravity="left">
+   		</TextView>
+    
+       <RelativeLayout
            xmlns:android="http://schemas.android.com/apk/res/android"
            android:layout_width="fill_parent"
-           android:layout_height="wrap_content"
+           android:layout_height="0dp"
+           android:layout_weight="1"
            android:orientation="horizontal" >
     
     		<Button android:text="Search"
    				android:id="@+id/searchBtn"
     			android:layout_width="wrap_content"
-    			android:layout_height="wrap_content"
+    			android:layout_height="match_parent"
      			android:textColor ="#000080"
      			android:onClick="searchList"
+     			android:textSize="12sp"
      			android:layout_alignParentRight="true">
  	 		</Button>
  	 	
     	   
            <EditText android:id="@+id/search_field"
                 android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
+				android:layout_height="match_parent"
 				android:inputType="text"
 				android:layout_toLeftOf="@+id/searchBtn" >
 		   </EditText>
  	 	
  	 </RelativeLayout>
-    
+    
+
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5"
+        android:layout_weight="0.7"
         android:orientation="horizontal">
  		
  		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -49,6 +66,7 @@
    					android:clickable="true"
    					android:onClick="sortButtonClicked"
    					android:text = "File Name"
+   					android:textSize="14sp"
    					android:gravity="center_vertical">
    				</TextView> 
   				<ImageView
@@ -72,6 +90,7 @@
    				android:textColor="#f5f5f5"
    				android:clickable="true"
    				android:onClick="sortButtonClicked"
+   				android:textSize="14sp"
    				android:text = "Size"
    				android:gravity="center_vertical"
    				/>
@@ -99,6 +118,7 @@
    				android:onClick="sortButtonClicked"
    				android:textColor="#f5f5f5"
    				android:gravity="center_vertical"
+   				android:textSize="14sp"
    				android:text = "Type"/>
    			
    		  	<ImageView
@@ -122,11 +142,12 @@
    			android:id="@+id/downloadCheckedBtn"
     		android:layout_width="wrap_content"
     		android:layout_height="0dp"
+    		android:textSize="12sp"
     		android:textColor ="#000080"
     		android:onClick="downloadCheckedClicked"
     		android:layout_gravity="center"
     		android:layout_weight="1"
-    		android:layout_marginBottom="15dip">
+    		android:layout_marginBottom="15dp">
  	</Button>
    	 	
 </LinearLayout>
