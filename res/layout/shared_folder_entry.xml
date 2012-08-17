@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" 
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
+  	  	
+	<Button
+		android:id="@+id/remove_folder"
+		android:background="@drawable/remove_folder"
+		android:contentDescription="remove folder icon"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:adjustViewBounds="true"
+		android:layout_marginRight="10dp"
+		android:onClick="SharedFolderEntryRemove_OnClick"
+		/>          
+
+	<TextView
+    	android:id="@+id/shared_folder_name"
+     	android:layout_width="wrap_content"
+     	android:layout_height="fill_parent"
+     	android:ellipsize="end"
+     	/> 
+
+</LinearLayout>

@@ -47,7 +47,7 @@ public class Storage implements IStorage  {
 
 	private void loadPreferences() {
 		// Restore preferences
-		mPrefSettings = mContext.getSharedPreferences(PREFS_NAME, Context.MODE_WORLD_READABLE);   //MODE_PRIVATE);
+		mPrefSettings = mContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);   //MODE_WORLD_READABLE
 
 		// restore uid
 		mUid = mPrefSettings.getString(UID_NAME, NO_VALUE);
@@ -115,6 +115,10 @@ public class Storage implements IStorage  {
 	}
 
 	public boolean setDownloadDir(String _downloadDir) {
+		File downloadDir = new File(_downloadDir);
+		if (!downloadDir.isDirectory())
+			return false;
+
 		if (savePrefString(DOWNLOAD_DIR_NAME, _downloadDir)) {
 			mDownloadDirectory = _downloadDir;
 			return true;
@@ -131,6 +135,10 @@ public class Storage implements IStorage  {
 		    mSharedDirectories.add(mDownloadDirectory);
 
 		for (int i = 0; i < _sharedDir.length; i++) {
+		    File currDir = new File(_sharedDir[i]);
+			if (!currDir.isDirectory())
+				continue;
+
 			if (mSharedDirectories.add(_sharedDir[i]))
 			    sb.append(_sharedDir[i]).append(SHARED_DIR_SEP);
 		}

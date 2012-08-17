@@ -1,10 +1,6 @@
 package org.fooshare;
 
 import org.fooshare.R;
-import org.fooshare.R.id;
-import org.fooshare.R.layout;
-import org.fooshare.R.string;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,10 +18,10 @@ import android.widget.TextView;
 
 public class SettingsActivity extends FragmentActivity {
 	private static final String TAG = "SettingsActivity";
-
-	private FooshareApplication mFooshare;
-	private BroadcastReceiver   mBroadcastReceiver;
-
+	protected FooshareApplication mFooshare;
+	private BroadcastReceiver mBroadcastReceiver;
+	private RegistrationFragment mRegFragment;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +37,8 @@ public class SettingsActivity extends FragmentActivity {
         if (fragment == null) {
 
             FragmentTransaction ft = fm.beginTransaction();
-            ft.add(R.id.fragment_reg_content, new RegistrationFragment());
+            mRegFragment = new RegistrationFragment();
+            ft.add(R.id.fragment_reg_content, mRegFragment);
             ft.commit();
         }
 
@@ -71,6 +68,11 @@ public class SettingsActivity extends FragmentActivity {
 
 		registerReceiver(mBroadcastReceiver, intentFilter);
     }
+
+    
+    public void SharedFolderEntryRemove_OnClick(View view) {
+    	mRegFragment.RemoveSharedFolder_OnClick(view);	
+}
 
     public void onQuitFooshareClick(View view) {
         Log.i(TAG, "Shutting down fooshare");
