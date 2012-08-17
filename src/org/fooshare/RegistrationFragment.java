@@ -175,15 +175,16 @@ public class RegistrationFragment extends Fragment {
 		public void onClick(View arg0) {
 			Log.d(TAG, "OnNicknameOKListener is running");
 			EditText editText = (EditText) getActivity().findViewById(R.id.name_field);
-			
+			editText.clearFocus();
+
 			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
 			Log.d(TAG, editText.getText().toString());
 
 	        String newNickname = editText.getText().toString();
 	        mFooshare.storage().setNickname(newNickname);
-	        
-	        
+
+
 		}};
 
 	OnClickListener OnSharedFolderEntryListener = new OnClickListener(){
