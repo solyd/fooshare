@@ -12,11 +12,10 @@ import android.util.Log;
 public class AlljoynPeer implements IPeer {
     private static final String TAG = "AlljoynPeer";
 
-    private String       _id;
-    private String       _name;
-    private int          _sessionId;
-    private IPeerService _remotePeerProxy;
-    //private AlljoynFileItem[]   _sharedFiles;
+    private String               _id;
+    private String               _name;
+    private int                  _sessionId;
+    private IPeerService         _remotePeerProxy;
     private Collection<FileItem> _sharedFiles = new ArrayList<FileItem>();
 
     public AlljoynPeer(String id, int sessionId, IPeerService remotePeerProxy) {

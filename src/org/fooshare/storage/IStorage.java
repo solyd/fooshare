@@ -21,6 +21,8 @@ public interface IStorage {
 
 	public File[] getMySharedFiles();
 
+	public void deleteFile(String fileFullPath);
+
 	/**
 	 * Create and return input stream to read a file from local storage.
 	 * The file must be in one of the shared directories.

@@ -15,8 +15,9 @@ import java.util.Map;
 
 import org.fooshare.events.Event;
 import org.fooshare.network.AlljoynService;
-import org.fooshare.network.DownloadItem;
+import org.fooshare.network.Download;
 import org.fooshare.network.DownloadService;
+import org.fooshare.network.FileServer.Upload;
 import org.fooshare.network.FileServerService;
 import org.fooshare.network.IPeerService.AlljoynFileItem;
 import org.fooshare.predicates.Predicate;
@@ -25,7 +26,6 @@ import org.fooshare.storage.Storage;
 
 import android.app.Application;
 import android.content.Intent;
-import android.os.ResultReceiver;
 import android.util.Log;
 
 public class FooshareApplication extends Application {
@@ -43,18 +43,33 @@ public class FooshareApplication extends Application {
     private final Object             _peerslock = new Object();
     private final Map<String, IPeer> _peers = new HashMap<String, IPeer>();
 
-    private final Object                   _dlItemsLock = new Object();
-    private final Collection<DownloadItem> _downloads = new LinkedList<DownloadItem>();
+    private final Object               _downloadsLock = new Object();
+    private final Collection<Download> _downloads = new LinkedList<Download>();
+
+    private final Object             _uploadsLock = new Object();
+    private final Collection<Upload> _uploads = new LinkedList<Upload>();
 
     // Determines how many concurrent downloads/uploads are allowed
     private int    _uploadSlots = 10;
     private int    _downloadSlots = 10;
 
-
     // This service facilitates all network related activities.
     private AlljoynService    _alljoynService;
     private FileServerService _fileServerService;
     private IStorage          _storage;
+
+    // This is the peer that was selected in the Peers activity.
+    // This is needed in order to show only this peers files in the
+    // Search activty.
+    private IPeer _selectedPeer = null;
+
+    public void setSelectedPeer(IPeer peer) {
+        _selectedPeer = peer;
+    }
+
+    public IPeer getSelectedPeer() {
+        return _selectedPeer;
+    }
 
     @Override
     public void onCreate() {
@@ -87,8 +102,8 @@ public class FooshareApplication extends Application {
      * running. For example - the Alljoyn Service and the File Server.
      */
     public void checkin() {
-        //initAlljoynService();
-        //initFileServerService();
+        initAlljoynService();
+        initFileServerService();
     }
 
     /**
@@ -113,7 +128,10 @@ public class FooshareApplication extends Application {
 
     public final Event<IPeer>       onPeerDiscovered = new Event<IPeer>();
     public final Event<IPeer>       onPeerLost = new Event<IPeer>();
-    public final Event<List<IPeer>> onPeerListChanged = new Event<List<IPeer>>();
+
+    public final Event<List<IPeer>>    onPeerListChanged = new Event<List<IPeer>>();
+    public final Event<List<Download>> onDownloadsListChanged = new Event<List<Download>>();
+    public final Event<List<Upload>>   onUploadsListChanged = new Event<List<Upload>>();
 
     /**
      * On first startup, the application will generate a unique id.
@@ -150,17 +168,11 @@ public class FooshareApplication extends Application {
         return fitem;
     }
 
-    private void onPeerListChanged() {
-        List<IPeer> peersCopy = new ArrayList<IPeer>();
-        peersCopy.addAll(_peers.values());
-        onPeerListChanged.trigger(peersCopy);
-    }
-
     public void addPeer(IPeer peer) {
         synchronized (_peerslock) {
             _peers.put(peer.id(), peer);
             onPeerDiscovered.trigger(peer);
-            onPeerListChanged();
+            onPeerListChanged.trigger(new ArrayList<IPeer>(_peers.values()));
         }
     }
 
@@ -177,7 +189,7 @@ public class FooshareApplication extends Application {
 
             _peers.remove(target.id());
             onPeerLost.trigger(target);
-            onPeerListChanged();
+            onPeerListChanged.trigger(new ArrayList<IPeer>(_peers.values()));
         }
     }
 
@@ -218,52 +230,85 @@ public class FooshareApplication extends Application {
     public List<FileItem> getAllSharedFiles(Predicate<FileItem> fileFilter) {
         List<FileItem> res = new LinkedList<FileItem>();
         synchronized (_peerslock) {
-            for (IPeer p : _peers.values())
-                res.addAll(p.files());
+            for (IPeer p : _peers.values()) {
+                for (FileItem f : p.files()) {
+                    if (fileFilter.pred(f))
+                        res.add(f);
+                }
+            }
         }
 
         return res;
     }
 
-    public void startDownloadService(FileItem fileItem, ResultReceiver resultReceiver) {
+    public void startDownloadService(FileItem fileItem) {
         Intent intent = new Intent(this, DownloadService.class);
 
         intent.putExtra(DownloadService.FILENAME, fileItem.getFullPath());
-        intent.putExtra(DownloadService.FILESIZE, fileItem.getSizeInBytes());
-        intent.putExtra(DownloadService.OWNERID, fileItem.getOwnerId());
-        intent.putExtra(DownloadService.RESULT_RECEIVER, resultReceiver);
+        intent.putExtra(DownloadService.FILESIZE, fileItem.sizeInBytes());
+        intent.putExtra(DownloadService.OWNERID, fileItem.ownerId());
 
         startService(intent);
     }
 
-    public void addDownloadItem(DownloadItem dlItem) {
+    public void addDownload(Download dlItem) {
         assert(dlItem != null);
-        synchronized (_dlItemsLock) {
+        synchronized (_downloadsLock) {
             _downloads.add(dlItem);
+            onDownloadsListChanged.trigger(new ArrayList<Download>(_downloads));
         }
     }
 
-    public void removeDownloadItem(DownloadItem dlItem) {
+    public void removeDownload(Download dlItem) {
         assert(dlItem != null);
-        synchronized (_dlItemsLock) {
+        synchronized (_downloadsLock) {
             _downloads.remove(dlItem);
+            onDownloadsListChanged.trigger(new ArrayList<Download>(_downloads));
         }
     }
 
-    public List<DownloadItem> getDownloads(Predicate<DownloadItem> dlfilter) {
-        synchronized (_dlItemsLock) {
-            List<DownloadItem> res = new LinkedList<DownloadItem>();
-            for (DownloadItem d : _downloads) {
-                res.add(new DownloadItem(d));
+    public void addUpload(Upload upload) {
+        assert(upload != null);
+        synchronized (_uploadsLock) {
+            _uploads.add(upload);
+            onUploadsListChanged.trigger(new ArrayList<Upload>(_uploads));
+        }
+    }
+
+    public void removeUpload(Upload upload) {
+        assert(upload != null);
+        synchronized (_uploadsLock) {
+            _uploads.remove(upload);
+            onUploadsListChanged.trigger(new ArrayList<Upload>(_uploads));
+        }
+    }
+
+    public List<Download> getDownloads(Predicate<Download> dlfilter) {
+        synchronized (_downloadsLock) {
+            List<Download> res = new LinkedList<Download>();
+            for (Download d : _downloads) {
+                if (dlfilter.pred(d))
+                    res.add(d);
+            }
+            return res;
+        }
+    }
+
+    public List<Upload> getUploads(Predicate<Upload> filter) {
+        synchronized (_uploadsLock) {
+            List<Upload> res = new LinkedList<Upload>();
+            for (Upload d : _uploads) {
+                if (filter.pred(d))
+                    res.add(d);
             }
             return res;
         }
     }
 
     public void stopAllDownloads() {
-        synchronized (_dlItemsLock) {
-            for (DownloadItem di : _downloads)
-                di.stopDownload();
+        synchronized (_downloadsLock) {
+            for (Download di : _downloads)
+                di.cancel();
         }
     }
 
@@ -301,16 +346,21 @@ public class FooshareApplication extends Application {
     public void quit() {
         onPeerDiscovered.clear();
         onPeerLost.clear();
+
         onPeerListChanged.clear();
-        //_alljoynService.shutdown();
+        onDownloadsListChanged.clear();
+        onUploadsListChanged.clear();
+
         _alljoynService = null;
         _fileServerService = null;
+
         stopAllDownloads();
+        _downloads.clear();
+        _uploads.clear();
+
         stopService(new Intent(this, AlljoynService.class));
         stopService(new Intent(this, FileServerService.class));
     }
-
-
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
