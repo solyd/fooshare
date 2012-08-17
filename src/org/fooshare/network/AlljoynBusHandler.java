@@ -255,14 +255,6 @@ public class AlljoynBusHandler extends Handler {
         Log.d(TAG, "doConnect()");
 
         org.alljoyn.bus.alljoyn.DaemonInit.PrepareDaemon(_alljoynService.getApplicationContext());
-        /*
-        try {
-            Thread.sleep(300);
-        }
-        catch (InterruptedException e) {
-            Log.i(TAG, Log.getStackTraceString(e));
-        }
-        */
 
         _bus = new BusAttachment(_alljoynService.getApplicationContext().getPackageName(), BusAttachment.RemoteMessage.Receive);
         //_bus = new BusAttachment(FooshareApplication.APPNAME, BusAttachment.RemoteMessage.Receive);
