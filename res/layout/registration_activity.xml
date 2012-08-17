@@ -3,21 +3,21 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:noHistory="true">  
-   		    
-    <FrameLayout
-        android:id="@+id/fragment_reg_content"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-    </FrameLayout>
-       
-	<Button 
+    android:noHistory="true">      
+    
+    <Button 
 	    android:text="Done"
    		android:id="@+id/registration_done"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content" 
     	android:layout_alignParentBottom="true"   	
-     	android:onClick="registrationDoneClicked"/>  
+     	android:onClick="registrationDoneClicked"/> 
+     	
+    <FrameLayout
+        android:id="@+id/fragment_reg_content"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/registration_done"/>
      	     
 </RelativeLayout>

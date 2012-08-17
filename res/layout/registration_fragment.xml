@@ -89,7 +89,6 @@
 	            android:text="Add..." />
     	</LinearLayout>
 	    
-	    
   		<ListView
         	android:id="@+id/listView_uDir"
         	android:layout_width="fill_parent"

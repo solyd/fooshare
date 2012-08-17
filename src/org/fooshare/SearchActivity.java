@@ -13,7 +13,9 @@ import org.fooshare.predicates.Predicate;
 import org.fooshare.predicates.SubStringPredicate;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,6 +24,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -134,7 +138,9 @@ public class SearchActivity extends Activity {
     // specifies how to sort the list
     private String sortFlag = NAME;
     
+    private AlertDialog.Builder builder;
     private Handler _uiHandler = new Handler(Looper.getMainLooper());
+	
     private class PeerListInSearchChanged implements Delegate<List<IPeer>> {
         public void invoke(final List<IPeer> newPeerList) {
             _uiHandler.post(new Runnable() {
@@ -191,11 +197,37 @@ public class SearchActivity extends Activity {
         mSearchListView = (ListView) findViewById(R.id.search_list);
         mSearchListView.setAdapter(mSearchListAdapter);
         mSearchListView.requestFocus();
+        mSearchListView.setClickable(true);
+        mSearchListView.setOnItemLongClickListener(OnSearchListItemClickListener);
 
         mSearchBar = (EditText) findViewById(R.id.search_field);
         
+        builder = new AlertDialog.Builder(this);
         _fooshare.onPeerListChanged.subscribe(new PeerListInSearchChanged());
     }
+    
+	OnItemLongClickListener OnSearchListItemClickListener = new OnItemLongClickListener() {
+		public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+			
+		    final FileItem fileEntry = mSearchListAdapter.getItem(position);
+		    
+		    String peerNickname = _fooshare.findPeer(fileEntry.ownerId()).name();
+		    if (peerNickname == null) {
+		    	peerNickname = fileEntry.ownerId();
+		    }
+		    
+		    String result = String.format("File description/n/nname: %s/nsize: %sowner: %s", 
+		    		fileEntry.name(), fileEntry.getAdjustedSize(), peerNickname); 
+		    
+		    builder.setMessage(result);
+		    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) { }
+		       });
+		    builder.show();
+
+			return true;
+		  }
+	   };
     
     // Runs when user clicks on the peers status
     public void onNumberPeersClick(View view) {
