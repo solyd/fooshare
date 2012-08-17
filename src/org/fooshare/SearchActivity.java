@@ -5,11 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.fooshare.R;
-import org.fooshare.R.drawable;
-import org.fooshare.R.id;
-import org.fooshare.R.layout;
-import org.fooshare.R.string;
 import org.fooshare.predicates.PeerIdFilePredicate;
 import org.fooshare.predicates.Predicate;
 import org.fooshare.predicates.SubStringPredicate;
@@ -83,10 +78,12 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     FileItem file = (FileItem) holder.checkBox.getTag();
                     file.setSelected(buttonView.isChecked());
-                    if (file.isSelected())
-                        checkedFiles.add(file);
-                    else
+
+                    boolean isFileInCheckedList = checkedFiles.contains(file);
+                    if (isFileInCheckedList && !file.isSelected())
                         checkedFiles.remove(file);
+                    else if (!isFileInCheckedList && file.isSelected())
+                        checkedFiles.add(file);
                 }
             });
             row.setTag(holder);
