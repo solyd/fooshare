@@ -16,7 +16,6 @@ public class AlljoynPeer implements IPeer {
     private String               _name;
     private int                  _sessionId;
     private IPeerService         _remotePeerProxy;
-    private Collection<FileItem> _sharedFiles = new ArrayList<FileItem>();
 
     public AlljoynPeer(String id, int sessionId, IPeerService remotePeerProxy) {
         _id = id;
@@ -25,12 +24,9 @@ public class AlljoynPeer implements IPeer {
 
         try {
             _name = _remotePeerProxy.peerName();
-            AlljoynFileItem[] peerFiles = _remotePeerProxy.peerFiles();
-            for (AlljoynFileItem pf : peerFiles)
-                _sharedFiles.add(new FileItem(pf.fullName, pf.sizeInBytes, pf.ownerId));
         }
         catch (BusException ignore) {
-            Log.i(TAG, Log.getStackTraceString(ignore));
+            Log.e(TAG, Log.getStackTraceString(ignore));
         }
     }
 
@@ -43,7 +39,17 @@ public class AlljoynPeer implements IPeer {
     }
 
     public Collection<FileItem> files() {
-        return _sharedFiles;
+        Collection<FileItem> sharedFiles = new ArrayList<FileItem>();
+        try {
+            AlljoynFileItem[] peerFiles = _remotePeerProxy.peerFiles();
+            for (AlljoynFileItem pf : peerFiles)
+                sharedFiles.add(new FileItem(pf.fullName, pf.sizeInBytes, pf.ownerId));
+        }
+        catch (BusException e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
+
+        return sharedFiles;
     }
 
     public int sessionId() {

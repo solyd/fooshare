@@ -80,25 +80,25 @@ public class Storage implements IStorage  {
 
 	}
 
-    public synchronized boolean isRegistrationNeeded() {
+    public synchronized RegistrationItem isRegistrationNeeded() {
 
 		if (mPrefSettings.getString(UID_NAME, NO_VALUE) == NO_VALUE) {
-			return true;
+			return RegistrationItem.UID;
 		}
 
 		if (mPrefSettings.getString(NICKNAME_NAME, NO_VALUE) == NO_VALUE) {
-			return true;
+			return RegistrationItem.NAME;
 		}
 
 		if (mPrefSettings.getString(DOWNLOAD_DIR_NAME, NO_VALUE) == NO_VALUE) {
-			return true;
+			return RegistrationItem.DOWNLOAD_DIR;
 		}
 
 		if (mPrefSettings.getString(SHARED_DIR_NAME, NO_VALUE) == NO_VALUE) {
-			return true;
+			return RegistrationItem.SHARED_DIRS;
 		}
 
-		return false;
+		return null;
     }
 
 	public void setUID(String _uid)	{
@@ -130,9 +130,6 @@ public class Storage implements IStorage  {
 	public synchronized boolean setSharedDir(String[] _sharedDir) {
 		StringBuilder sb = new StringBuilder();
 		mSharedDirectories.clear();
-
-		if (mDownloadDirectory != null)
-		    mSharedDirectories.add(mDownloadDirectory);
 
 		for (int i = 0; i < _sharedDir.length; i++) {
 		    File currDir = new File(_sharedDir[i]);

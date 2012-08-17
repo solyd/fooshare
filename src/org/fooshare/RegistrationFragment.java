@@ -35,7 +35,7 @@ class UDirListEntryAdapter extends ArrayAdapter<String> {
     Context context;
     private int layoutResourceId;
     private List<String> data ;
-    
+
     public UDirListEntryAdapter(Context context, int layoutResourceId, List<String> arr) {
         super(context, layoutResourceId, arr);
         this.layoutResourceId = layoutResourceId;
@@ -54,7 +54,7 @@ class UDirListEntryAdapter extends ArrayAdapter<String> {
             final UDirEntryHolder holder = new UDirEntryHolder();
             holder.folderName = (TextView) row.findViewById(R.id.shared_folder_name);
             row.setTag(holder);
-            
+
         } else {
             row = convertView;
         }
@@ -63,7 +63,7 @@ class UDirListEntryAdapter extends ArrayAdapter<String> {
         holder.folderName.setText(data.get(position));
         return row;
     }
-    
+
     /* This function adds an element to the array of entries */
     @Override
     public void add(String newEntry) {
@@ -90,7 +90,7 @@ public class RegistrationFragment extends Fragment {
 	protected ArrayList<String> listItems;
 	//string adapter to handle listview
 	UDirListEntryAdapter adapter;
-	
+
 	private AlertDialog.Builder builder;
 
     @Override
@@ -113,6 +113,7 @@ public class RegistrationFragment extends Fragment {
 		editText = (EditText)view.findViewById(R.id.name_field);
 		editText.setText(mFooshare.storage().getNickName());
 		editText = (EditText)view.findViewById(R.id.downloads_folder_field);
+
 		if (mFooshare.storage().getDownloadDir() != "") {
 			editText.setText(mFooshare.storage().getDownloadDir());
 			editText.setTextColor(Color.BLACK);
@@ -175,24 +176,22 @@ public class RegistrationFragment extends Fragment {
 			Log.d(TAG, "OnNicknameOKListener is running");
 			EditText editText = (EditText) getActivity().findViewById(R.id.name_field);
 			editText.clearFocus();
-			
+
 			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
 			Log.d(TAG, editText.getText().toString());
 
 	        String newNickname = editText.getText().toString();
 	        mFooshare.storage().setNickname(newNickname);
-	        
-	        
 		}};
-    
+
 	OnClickListener OnSharedFolderEntryListener = new OnClickListener(){
 		public void onClick(View view) {
-		
+
 			ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
 			int position = lv_sharedDir.getPositionForView((View) view.getParent());
 		    final Object o = lv_sharedDir.getItemAtPosition(position);
-	
+
 			builder.setMessage("Are you sure you want to remove " + o.toString() + " ?")
 		       .setCancelable(false)
 		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -206,12 +205,12 @@ public class RegistrationFragment extends Fragment {
 		                dialog.cancel();
 		           }
 		       });
-	
+
 			AlertDialog alert = builder.create();
 			alert.show();
 		}
 	};
-	
+
 //	OnItemLongClickListener OnUDirItemClickListener = new OnItemLongClickListener() {
 //		public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 //
@@ -249,25 +248,26 @@ public class RegistrationFragment extends Fragment {
     		Log.d(TAG, "no result from the activity");
     		return;
     	}
-		
+
 		if (newDir == null) {
 			Log.d(TAG, "newDir is null");
 			return;
 		}
-		
+
 		File dir = new File(newDir);
 		if (!dir.isDirectory()) {
 			Log.d(TAG, "newDir not a directory");
 			return;
 		}
-		
-		if (requestCode == REQUEST_CODE_PICK_DIR) {
-			TextView tv = (TextView) getActivity().findViewById(R.id.downloads_folder_field);
-			tv.setText(newDir);
-			tv.setTextColor(Color.BLACK);
 
-			// update download_dir in storage
-	        mFooshare.storage().setDownloadDir(newDir);
+		if (requestCode == REQUEST_CODE_PICK_DIR) {
+		    TextView tv = (TextView) getActivity().findViewById(R.id.downloads_folder_field);
+		    tv.setText(newDir);
+		    tv.setTextColor(Color.BLACK);
+
+		    // update download_dir in storage
+		    mFooshare.storage().setDownloadDir(newDir);
+
         }
 
 		if (requestCode == REQUEST_CODE_PICK_UPLOAD_DIR) {
@@ -289,7 +289,7 @@ public class RegistrationFragment extends Fragment {
 	}
 
 	public void RemoveSharedFolder_OnClick(View view) {
-		
+
 		ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
 		int position = lv_sharedDir.getPositionForView((View) view.getParent());
 		final Object o = lv_sharedDir.getItemAtPosition(position);
@@ -312,9 +312,9 @@ public class RegistrationFragment extends Fragment {
 		AlertDialog alert = builder.create();
 		alert.show();
 	  }
-	
-	
-	
-	
-	
+
+
+
+
+
 }

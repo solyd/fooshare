@@ -222,7 +222,7 @@ public class FooshareApplication extends Application {
             return _peers.get(peerId);
         }
     }
-    
+
     public IPeer findPeer(Predicate<IPeer> peerFinder) {
         synchronized (_peerslock) {
             for (IPeer p : _peers.values())
