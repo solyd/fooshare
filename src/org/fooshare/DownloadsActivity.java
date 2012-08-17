@@ -224,6 +224,8 @@ public class DownloadsActivity extends Activity {
 
         _fooshare.onDownloadsListChanged.subscribe(new DownloadListChanged());
         _fooshare.onUploadsListChanged.subscribe(new UploadListChanged());
+        
+        
     }
 
     @Override

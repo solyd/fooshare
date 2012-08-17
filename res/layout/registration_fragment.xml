@@ -13,9 +13,6 @@
 		android:focusable="true"
 		android:focusableInTouchMode="true"/>  
     
-    
-
-    
     <TextView 
   		android:id="@+id/chooseNick"
 		android:layout_width="fill_parent"
