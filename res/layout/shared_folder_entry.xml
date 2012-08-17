@@ -9,10 +9,10 @@
   	  	
 	<Button
 		android:id="@+id/remove_folder"
-		android:background="@drawable/remove_folder"
+		android:background="@drawable/red_x_selector"
 		android:contentDescription="remove folder icon"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
 		android:adjustViewBounds="true"
 		android:layout_marginRight="10dp"
 		android:onClick="SharedFolderEntryRemove_OnClick"

@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.fooshare.R;
+import org.fooshare.events.Delegate;
+
 import org.fooshare.predicates.PeerIdFilePredicate;
 import org.fooshare.predicates.Predicate;
 import org.fooshare.predicates.SubStringPredicate;
@@ -12,6 +15,8 @@ import org.fooshare.predicates.SubStringPredicate;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -128,6 +133,19 @@ public class SearchActivity extends Activity {
 
     // specifies how to sort the list
     private String sortFlag = NAME;
+    
+    private Handler _uiHandler = new Handler(Looper.getMainLooper());
+    private class PeerListInSearchChanged implements Delegate<List<IPeer>> {
+        public void invoke(final List<IPeer> newPeerList) {
+            _uiHandler.post(new Runnable() {
+                public void run() {
+                	// set the number of peers connected
+                	String numPeers = Integer.toString(newPeerList.size());
+                	((TextView)findViewById(R.id.number_peers_connected)).setText(numPeers);
+                }
+            });
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -175,6 +193,14 @@ public class SearchActivity extends Activity {
         mSearchListView.requestFocus();
 
         mSearchBar = (EditText) findViewById(R.id.search_field);
+        
+        _fooshare.onPeerListChanged.subscribe(new PeerListInSearchChanged());
+    }
+    
+    // Runs when user clicks on the peers status
+    public void onNumberPeersClick(View view) {
+		TabHost tabhost = ((TabHost) getParent().findViewById(android.R.id.tabhost));
+		tabhost.setCurrentTabByTag(getResources().getString (R.string.PEERS_TAB_TAG));
     }
 
     // Runs when the user presses S. It filters the list according to what is
