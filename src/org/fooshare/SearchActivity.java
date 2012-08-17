@@ -5,6 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.fooshare.R;
+import org.fooshare.R.drawable;
+import org.fooshare.R.id;
+import org.fooshare.R.layout;
+import org.fooshare.R.string;
 import org.fooshare.predicates.PeerIdFilePredicate;
 import org.fooshare.predicates.Predicate;
 import org.fooshare.predicates.SubStringPredicate;
@@ -261,6 +266,9 @@ public class SearchActivity extends Activity {
 
     public void downloadCheckedClicked(View view) {
         final List<FileItem> checkedItems = mSearchListAdapter.getCheckedFiles();
+        if (checkedItems.size() == 0)
+            return;
+
         for (FileItem fi : checkedItems) {
             _fooshare.startDownloadService(fi);
             fi.setSelected(false);

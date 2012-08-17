@@ -18,6 +18,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.fooshare.R;
+import org.fooshare.R.drawable;
+import org.fooshare.R.id;
+import org.fooshare.R.layout;
 
 import android.app.Activity;
 import android.content.Intent;

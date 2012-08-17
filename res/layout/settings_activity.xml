@@ -35,5 +35,16 @@
         android:layout_below="@id/SSIDLayout">
 
     </FrameLayout>
-     	      
+
+    <Button 
+	    android:text="Quit fooshare"
+   		android:id="@+id/quit_fooshare"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content" 
+    	android:layout_alignParentBottom="true"
+    	android:layout_centerInParent="true"   	
+    	android:layout_gravity="center"
+     	android:onClick="onQuitFooshareClick"/>
+    
+         	      
 </RelativeLayout>

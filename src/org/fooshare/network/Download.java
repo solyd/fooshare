@@ -6,11 +6,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.fooshare.DownloadsActivity.DownloadUpdateReceiver;
 import org.fooshare.FileItem;
 import org.fooshare.FooshareApplication;
 
-import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 public class Download implements Runnable {
@@ -33,9 +32,9 @@ public class Download implements Runnable {
     // must obtain a reference to this download item. Then, create a
     // DownloadReciever object and register it with this download item
     // object.
-    private long                   _progressInBytes;
-    private DownloadUpdateReceiver _updateReceiver;
-    private Object                 _updateLock = new Object();
+    private volatile long  _progressInBytes;
+    private ResultReceiver _updateReceiver;
+    private Object         _updateLock = new Object();
 
     private FooshareApplication    _fooshare;
 
@@ -70,7 +69,7 @@ public class Download implements Runnable {
         return (int) (_progressInBytes * 100.0 / _fileItem.sizeInBytes());
     }
 
-    public void setUpdateReceiver(DownloadUpdateReceiver updateReceiver) {
+    public void setUpdateReceiver(ResultReceiver updateReceiver) {
         synchronized (_updateLock) {
             _updateReceiver = updateReceiver;
         }
@@ -83,14 +82,19 @@ public class Download implements Runnable {
                 if (status == DownloadStatus.NOT_STARTED ||
                 status == DownloadStatus.FINISHED)
                     return;
+                break;
+
             case DOWNLOADING:
                 if (status == DownloadStatus.NOT_STARTED)
                     return;
+                break;
+
             case FAILED:
             case FINISHED:
             case CANCELED:
                 return;
             }
+
             _status = status;
         }
     }
@@ -112,13 +116,23 @@ public class Download implements Runnable {
     }
 
     public void start() {
+        if (_status != DownloadStatus.NOT_STARTED)
+            return;
+
         setStatus(DownloadStatus.DOWNLOADING);
         _dlThread = new Thread(this);
         _dlThread.setDaemon(true);
         _dlThread.start();
     }
 
-    public void stop() {
+    public void cancel() {
+        switch (_status) {
+        case FINISHED:
+        case CANCELED:
+        case FAILED:
+            return;
+        }
+
         try {
             _dlSocket.close();
             _dlThread.join();
@@ -131,6 +145,7 @@ public class Download implements Runnable {
         }
         finally {
             setStatus(DownloadStatus.CANCELED);
+            _fooshare.storage().deleteFile(_fileItem.getFullPath());
         }
     }
 
@@ -164,7 +179,7 @@ public class Download implements Runnable {
                 _progressInBytes += bytesRead;
 
 
-                // TODO determien when its best to update and remove magic numbers
+                // TODO determine when its best to update and remove magic numbers
                 if (_progressInBytes % 4096 == 0 || _fileItem.sizeInBytes() < 32768) {
 
                     // publish progress to ui
@@ -188,6 +203,11 @@ public class Download implements Runnable {
             Log.i(TAG, Log.getStackTraceString(e));
         }
         finally {
+            synchronized (_updateLock) {
+                if (_updateReceiver != null) {
+                    _updateReceiver.send(0, null);
+                }
+            }
             if (_progressInBytes == _fileItem.sizeInBytes())
                 setStatus(DownloadStatus.FINISHED);
             else

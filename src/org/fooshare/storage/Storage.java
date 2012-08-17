@@ -121,6 +121,10 @@ public class Storage implements IStorage  {
 
 	public synchronized boolean setSharedDir(String[] _sharedDir) {
 		StringBuilder sb = new StringBuilder();
+
+		if (mDownloadDirectory != null)
+		    sb.append(mDownloadDirectory).append(SHARED_DIR_SEP);
+
 		for (int i = 0; i < _sharedDir.length; i++) {
 			sb.append(_sharedDir[i]).append(SHARED_DIR_SEP);
 		}
@@ -187,6 +191,7 @@ public class Storage implements IStorage  {
 	}
 
 	public synchronized BufferedOutputStream getStream4Download(String fileName) {
+	    Log.i(TAG, "Writing to file " + fileName);
 		File file = new File(mDownloadDirectory, fileName);
 		try {
 		    return new BufferedOutputStream(new FileOutputStream(file), BUFFER_SIZE);
@@ -197,7 +202,7 @@ public class Storage implements IStorage  {
 	}
 
 	public synchronized BufferedInputStream getStream4Upload(String fullFilePath) {
-	    Log.i(TAG, fullFilePath);
+	    Log.i(TAG, "Reading file " + fullFilePath);
 	    File file = new File(fullFilePath);
 	    if(!file.exists() || !file.isFile() || !isFileInSharedDirs(file)) {
 	        return null;
@@ -211,10 +216,15 @@ public class Storage implements IStorage  {
 	    }
 	}
 
-	private synchronized boolean isFileInSharedDirs(File file) {
-	    if (!file.isFile())
-	        return false;
+	public synchronized void deleteFile(String fullFilePath) {
+	    File deleteMe = new File(fullFilePath);
+	    if (!deleteMe.isFile() || mDownloadDirectory == null || !fullFilePath.startsWith(mDownloadDirectory))
+	        return;
 
+	    deleteMe.delete();
+	}
+
+	public synchronized boolean isFileInSharedDirs(File file) {
 	    String fileFullPath;
 	    try {
 	        fileFullPath = file.getCanonicalPath();

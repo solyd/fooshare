@@ -17,6 +17,7 @@ import org.fooshare.events.Event;
 import org.fooshare.network.AlljoynService;
 import org.fooshare.network.Download;
 import org.fooshare.network.DownloadService;
+import org.fooshare.network.FileServer.Upload;
 import org.fooshare.network.FileServerService;
 import org.fooshare.network.IPeerService.AlljoynFileItem;
 import org.fooshare.predicates.Predicate;
@@ -44,6 +45,9 @@ public class FooshareApplication extends Application {
 
     private final Object               _downloadsLock = new Object();
     private final Collection<Download> _downloads = new LinkedList<Download>();
+
+    private final Object             _uploadsLock = new Object();
+    private final Collection<Upload> _uploads = new LinkedList<Upload>();
 
     // Determines how many concurrent downloads/uploads are allowed
     private int    _uploadSlots = 10;
@@ -127,6 +131,7 @@ public class FooshareApplication extends Application {
 
     public final Event<List<IPeer>>    onPeerListChanged = new Event<List<IPeer>>();
     public final Event<List<Download>> onDownloadsListChanged = new Event<List<Download>>();
+    public final Event<List<Upload>>   onUploadsListChanged = new Event<List<Upload>>();
 
     /**
      * On first startup, the application will generate a unique id.
@@ -254,6 +259,23 @@ public class FooshareApplication extends Application {
         assert(dlItem != null);
         synchronized (_downloadsLock) {
             _downloads.remove(dlItem);
+            onDownloadsListChanged.trigger(new ArrayList<Download>(_downloads));
+        }
+    }
+
+    public void addUpload(Upload upload) {
+        assert(upload != null);
+        synchronized (_uploadsLock) {
+            _uploads.add(upload);
+            onUploadsListChanged.trigger(new ArrayList<Upload>(_uploads));
+        }
+    }
+
+    public void removeUpload(Upload upload) {
+        assert(upload != null);
+        synchronized (_uploadsLock) {
+            _uploads.remove(upload);
+            onUploadsListChanged.trigger(new ArrayList<Upload>(_uploads));
         }
     }
 
@@ -268,10 +290,21 @@ public class FooshareApplication extends Application {
         }
     }
 
+    public List<Upload> getUploads(Predicate<Upload> filter) {
+        synchronized (_uploadsLock) {
+            List<Upload> res = new LinkedList<Upload>();
+            for (Upload d : _uploads) {
+                if (filter.pred(d))
+                    res.add(d);
+            }
+            return res;
+        }
+    }
+
     public void stopAllDownloads() {
         synchronized (_downloadsLock) {
             for (Download di : _downloads)
-                di.stop();
+                di.cancel();
         }
     }
 
@@ -312,15 +345,18 @@ public class FooshareApplication extends Application {
 
         onPeerListChanged.clear();
         onDownloadsListChanged.clear();
-        //_alljoynService.shutdown();
+        onUploadsListChanged.clear();
+
         _alljoynService = null;
         _fileServerService = null;
+
         stopAllDownloads();
+        _downloads.clear();
+        _uploads.clear();
+
         stopService(new Intent(this, AlljoynService.class));
         stopService(new Intent(this, FileServerService.class));
     }
-
-
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

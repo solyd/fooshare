@@ -3,6 +3,10 @@ package org.fooshare;
 import java.util.Collection;
 import java.util.List;
 
+import org.fooshare.R;
+import org.fooshare.R.id;
+import org.fooshare.R.layout;
+import org.fooshare.R.menu;
 import org.fooshare.events.Delegate;
 import org.fooshare.network.DownloadService;
 
