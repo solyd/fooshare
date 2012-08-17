@@ -39,12 +39,42 @@ public class Download implements Runnable {
     private FooshareApplication    _fooshare;
 
     public static enum DownloadStatus {
-        NOT_STARTED,    // User requested the file to be download, but fooshare didn't start the download yet
-        PASUED,         // user has paused the download
-        DOWNLOADING,    // The download is in active progress
-        FINISHED,       // Download has completed successfully
-        CANCELED,       // Download was canceled by user
-        FAILED          // Download has failed after start due to some reason
+        NOT_STARTED {     // User requested the file to be download, but fooshare didn't start the download yet
+            @Override
+            public String toString() {
+                return "Not Started";
+            }
+        },
+        PASUED {           // user has paused the download
+            @Override
+            public String toString() {
+                return "Paused";
+            }
+        },
+        DOWNLOADING {      // The download is in active progress
+            @Override
+            public String toString() {
+                return "Downloading";
+            }
+        },
+        FINISHED {         // Download has completed successfully
+            @Override
+            public String toString() {
+                return "Finished";
+            }
+        },
+        CANCELED {         // Download was canceled by user
+            @Override
+            public String toString() {
+                return "Canceled";
+            }
+        },
+        FAILED {          // Download has failed after start due to some reason
+            @Override
+            public String toString() {
+                return "Failed";
+            }
+        }
     }
 
     public Download(FooshareApplication fooshare,

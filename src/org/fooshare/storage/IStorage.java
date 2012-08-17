@@ -3,10 +3,43 @@ package org.fooshare.storage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.util.Set;
 
 public interface IStorage {
+    public static enum RegistrationItem {
+	    UID {
+	      @Override
+	      public String toString() {
+	          return "UID";
+	      }
+	    },
+	    NAME {
+	        @Override
+	        public String toString() {
+	            return "Please enter a Nickname";
+	        }
+	    },
+	    DOWNLOAD_DIR {
+	        @Override
+	        public String toString() {
+	            return "Please specify a Download directory";
+	        }
+	    },
+	    SHARED_DIRS {
+	        @Override
+	        public String toString() {
+	            return "Please choose your Shared Directories";
+	        }
+	    }
+	}
 
-    boolean isRegistrationNeeded();
+    /**
+     * Tells us whether additional information is needed in order for the fooshare
+     * application to work.
+     * @return null if no additional information is needed, otherwise RegistrationItem
+     * which is missing
+     */
+    RegistrationItem isRegistrationNeeded();
 
 	public String getUID();
 

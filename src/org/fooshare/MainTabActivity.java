@@ -4,6 +4,7 @@ import org.fooshare.R;
 import org.fooshare.R.drawable;
 import org.fooshare.R.layout;
 import org.fooshare.R.string;
+import org.fooshare.storage.IStorage.RegistrationItem;
 
 import android.app.TabActivity;
 import android.content.Intent;
@@ -31,7 +32,7 @@ public class MainTabActivity extends TabActivity {
 
         setContentView(R.layout.main);
 
-        if ((_fooshare.storage().isRegistrationNeeded())) {
+        if (_fooshare.storage().isRegistrationNeeded() != null) {
             Intent intentS = new Intent(MainTabActivity.this,RegistrationActivity.class);
         	startActivity(intentS);
         }

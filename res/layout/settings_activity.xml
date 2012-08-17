@@ -15,12 +15,10 @@
      		android:id="@+id/wifi_name_field"
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:text="WiFi: "
-			/>
+			android:text="WiFi: " />
 		
 		<TextView
 			android:id="@+id/SSID_field"
-			
 			android:textColor="@android:color/white"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -28,15 +26,7 @@
      	
 	</LinearLayout>
     	    
-    <FrameLayout
-        android:id="@+id/fragment_reg_content"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/SSIDLayout">
-
-    </FrameLayout>
-
-    <Button 
+	<Button 
 	    android:text="Quit fooshare"
    		android:id="@+id/quit_fooshare"
     	android:layout_width="wrap_content"
@@ -45,6 +35,12 @@
     	android:layout_centerInParent="true"   	
     	android:layout_gravity="center"
      	android:onClick="onQuitFooshareClick"/>
-    
-         	      
+	    
+    <FrameLayout
+        android:id="@+id/fragment_reg_content"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/SSIDLayout" 
+        android:layout_above="@id/quit_fooshare"/>
+
 </RelativeLayout>

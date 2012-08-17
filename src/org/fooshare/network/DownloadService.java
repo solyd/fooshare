@@ -57,6 +57,11 @@ public class DownloadService extends IntentService {
 
         // Write received bytes to this
         File downloadedFile = new File(fileName);
+//        int i = 0;
+//        while (downloadedFile.exists()) {
+//            String currFileName = indexFileName(fileName, i);
+//            downloadedFile = new File(currFileName);
+//        }
         BufferedOutputStream dlFileBuffed = fooshare.storage().getStream4Download(downloadedFile.getName());
         if (dlFileBuffed == null) {
             Log.e(TAG, "Couldn't open OutputStream for writing file " + fileName);
@@ -67,5 +72,18 @@ public class DownloadService extends IntentService {
         Download download = new Download(fooshare, remoteHost, remotePort, fileItem, dlFileBuffed);
         fooshare.addDownload(download);
         download.start();
+    }
+
+    /**
+     * Creates indexed file name. For example:
+     * /tmp/song.mp3
+     * /tmp/song(1).mp3
+     * /tmp/song(2).mp3
+     * @param fileName
+     * @param index
+     * @return
+     */
+    private String indexFileName(String fileName, int index) {
+        return null;
     }
 }

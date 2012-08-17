@@ -59,9 +59,9 @@
 		android:layout_width="fill_parent"
 		android:text="Press here to select a folder..."
 		android:textColor="#cdc9c9"
+		android:inputType="textNoSuggestions"
 		android:focusable="false"
-		android:clickable="true"
-		android:inputType="text">
+		android:clickable="true">
 	</EditText>		
 		
 	<LinearLayout 
@@ -88,7 +88,6 @@
 	            android:layout_height="wrap_content"
 	            android:text="Add..." />
     	</LinearLayout>
-	    
 	    
   		<ListView
         	android:id="@+id/listView_uDir"

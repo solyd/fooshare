@@ -18,10 +18,30 @@ public class FileServer {
     private static final String TAG = "FileServer";
 
     public static enum UploadStatus {
-        UPLOADING,
-        FINISHED,
-        CANCELED,
-        FAILED
+        UPLOADING {
+            @Override
+            public String toString() {
+                return "Uploading";
+            }
+        },
+        FINISHED {
+            @Override
+            public String toString() {
+                return "Finished";
+            }
+        },
+        CANCELED {
+            @Override
+            public String toString() {
+                return "Canceled";
+            }
+        },
+        FAILED {
+            @Override
+            public String toString() {
+                return "Failed";
+            }
+        }
     }
 
     private FooshareApplication _fooshare;
@@ -189,7 +209,10 @@ public class FileServer {
                     }
                 }
 
-                _status = UploadStatus.FINISHED;
+                if (_progressInBytes == _fileLen)
+                    _status = UploadStatus.FINISHED;
+                else
+                    _status = UploadStatus.FAILED;
             }
         }
 

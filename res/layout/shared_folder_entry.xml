@@ -11,18 +11,18 @@
 		android:id="@+id/remove_folder"
 		android:background="@drawable/red_x_selector"
 		android:contentDescription="remove folder icon"
-		android:layout_width="24dp"
-		android:layout_height="24dp"
+		android:layout_width="30dp"
+		android:layout_height="30dp"
 		android:adjustViewBounds="true"
 		android:layout_marginRight="10dp"
 		android:onClick="SharedFolderEntryRemove_OnClick"
-		/>          
+		/>
 
 	<TextView
     	android:id="@+id/shared_folder_name"
      	android:layout_width="wrap_content"
      	android:layout_height="fill_parent"
      	android:ellipsize="end"
-     	/> 
+     	android:textAppearance="?android:attr/textAppearanceMedium" /> 
 
 </LinearLayout>
