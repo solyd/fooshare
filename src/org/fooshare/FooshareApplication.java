@@ -230,8 +230,12 @@ public class FooshareApplication extends Application {
     public List<FileItem> getAllSharedFiles(Predicate<FileItem> fileFilter) {
         List<FileItem> res = new LinkedList<FileItem>();
         synchronized (_peerslock) {
-            for (IPeer p : _peers.values())
-                res.addAll(p.files());
+            for (IPeer p : _peers.values()) {
+                for (FileItem f : p.files()) {
+                    if (fileFilter.pred(f))
+                        res.add(f);
+                }
+            }
         }
 
         return res;
