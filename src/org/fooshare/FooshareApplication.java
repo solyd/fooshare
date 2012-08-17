@@ -217,6 +217,12 @@ public class FooshareApplication extends Application {
         }
     }
 
+    public IPeer findPeer(String peerId) {
+        synchronized (_peerslock) {
+            return _peers.get(peerId);
+        }
+    }
+
     public IPeer findPeer(Predicate<IPeer> peerFinder) {
         synchronized (_peerslock) {
             for (IPeer p : _peers.values())
