@@ -33,16 +33,15 @@
       					android:maxLines="2"
       		  			android:textSize="13dp"
       		  			android:textColor="#f5f5f5"/>  
-      		  	
-           			<TextView android:id="@+id/downloads_activity_file_size"
-     		  			android:layout_width="fill_parent"
-      					android:layout_height="20dp"      					
-      					android:ellipsize="end"
-      					android:maxLines="1"
-      					android:gravity="right"
-      					android:text="FileSize"
-      		  			android:textSize="12dp"
-      		  	 		android:textColor="#f5f5f5"/> 
+      		  	
+                    <TextView
+                        android:id="@+id/percentage"
+                        android:layout_width="fill_parent"
+                        android:layout_height="20dp"
+                        android:gravity="right"
+                        android:textColor="#f5f5f5"
+                        android:textSize="12dp" />
+
       		  </LinearLayout>      		  	
       	  <ProgressBar
       	      	 android:id="@+id/progressbar"
@@ -57,19 +56,23 @@
    		 	android:layout_height="wrap_content"
    		 	android:onClick="onDownloadEntryClick">
                          		  	  	        		  	
-   			   <TextView android:id="@+id/eta"
+   			   <TextView android:id="@+id/status"
      			  	android:layout_width="240dp"
       				android:layout_height="20dp"
       				android:maxLines="1"
       			  	android:textSize="12dp"
-      			  	android:textColor="#f5f5f5"/> 
+      			  	android:textColor="#f5f5f5"/>
+   			   
+   			       <TextView android:id="@+id/downloads_activity_file_size"
+     		  			android:layout_width="fill_parent"
+      					android:layout_height="20dp"      					
+      					android:ellipsize="end"
+      					android:maxLines="1"
+      					android:gravity="right"
+      		  			android:textSize="12dp"
+      		  	 		android:textColor="#f5f5f5"/>
         	
-       		 <TextView android:id="@+id/percentage"
-     		  		android:layout_width="fill_parent"
-      				android:layout_height="20dp"
-      				android:gravity="right"
-      			    android:textSize="12dp"
-      		  	 	android:textColor="#f5f5f5"/>       		  	
+       		        		  	
       	 </LinearLayout>	  	   		  
       </LinearLayout>
 </LinearLayout>

@@ -31,7 +31,7 @@ public class Download implements Runnable {
     // In order to be able to publish the updates to some thread it first
     // must obtain a reference to this download item. Then, create a
     // DownloadReciever object and register it with this download item
-    // object.    
+    // object.
     private volatile long  _progressInBytes;
     private ResultReceiver _updateReceiver;
     private Object         _updateLock = new Object();
@@ -94,10 +94,9 @@ public class Download implements Runnable {
     public void setProgress(long progressInBytes) {
         _progressInBytes = progressInBytes;
     }
-////////////////////////////////////Alex's Changes only for testing
+
     public int getPercentageProgress() {
-        //return (int) (_progressInBytes * 100.0 / _fileItem.sizeInBytes());
-    	return 200;
+        return (int) (_progressInBytes * 100.0 / _fileItem.sizeInBytes());
     }
 
     public void setUpdateReceiver(ResultReceiver updateReceiver) {

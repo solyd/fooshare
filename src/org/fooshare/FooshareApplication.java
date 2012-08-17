@@ -78,7 +78,7 @@ public class FooshareApplication extends Application {
         _storage = new Storage(getApplicationContext());
         Log.i(TAG, "Generated id: " + _storage.getUID());
 
-        checkin();
+        //checkin();
     }
 
     /**

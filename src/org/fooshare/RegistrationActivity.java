@@ -41,7 +41,7 @@ public class RegistrationActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-
+        // TODO
     }
 
 	public void registrationDoneClicked(View view) {
