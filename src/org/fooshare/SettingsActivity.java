@@ -1,10 +1,6 @@
 package org.fooshare;
 
 import org.fooshare.R;
-import org.fooshare.R.id;
-import org.fooshare.R.layout;
-import org.fooshare.R.string;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

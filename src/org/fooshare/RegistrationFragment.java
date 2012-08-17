@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.fooshare.R;
-import org.fooshare.R.id;
-import org.fooshare.R.layout;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,14 +22,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -138,8 +132,8 @@ public class RegistrationFragment extends Fragment {
 
         ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
         lv_sharedDir.setAdapter(adapter);
-        lv_sharedDir.setClickable(true);
-		lv_sharedDir.setOnItemLongClickListener(OnUDirItemClickListener);
+//      lv_sharedDir.setClickable(true);
+//		lv_sharedDir.setOnItemLongClickListener(OnUDirItemClickListener);
 
 
 		Button nickNameOK = (Button)getActivity().findViewById(R.id.nick_ok);
@@ -215,31 +209,31 @@ public class RegistrationFragment extends Fragment {
 		}
 	};
 	
-	OnItemLongClickListener OnUDirItemClickListener = new OnItemLongClickListener() {
-		public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-
-			ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
-		    final Object o = lv_sharedDir.getItemAtPosition(position);
-
-			builder.setMessage("Are you sure you want to remove " + o.toString() + " ?")
-		       .setCancelable(false)
-		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		   		    adapter.remove(o.toString());
-				    UpdateSharedDir();
-		           }
-		       })
-		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		                dialog.cancel();
-		           }
-		       });
-
-			AlertDialog alert = builder.create();
-			alert.show();
-			return true;
-		  }
-	   };
+//	OnItemLongClickListener OnUDirItemClickListener = new OnItemLongClickListener() {
+//		public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+//
+//			ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
+//		    final Object o = lv_sharedDir.getItemAtPosition(position);
+//
+//			builder.setMessage("Are you sure you want to remove " + o.toString() + " ?")
+//		       .setCancelable(false)
+//		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//		           public void onClick(DialogInterface dialog, int id) {
+//		   		    adapter.remove(o.toString());
+//				    UpdateSharedDir();
+//		           }
+//		       })
+//		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+//		           public void onClick(DialogInterface dialog, int id) {
+//		                dialog.cancel();
+//		           }
+//		       });
+//
+//			AlertDialog alert = builder.create();
+//			alert.show();
+//			return true;
+//		  }
+//	   };
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -252,7 +246,18 @@ public class RegistrationFragment extends Fragment {
     		Log.d(TAG, "no result from the activity");
     		return;
     	}
-
+		
+		if (newDir == null) {
+			Log.d(TAG, "newDir is null");
+			return;
+		}
+		
+		File dir = new File(newDir);
+		if (!dir.isDirectory()) {
+			Log.d(TAG, "newDir not a directory");
+			return;
+		}
+		
 		if (requestCode == REQUEST_CODE_PICK_DIR) {
 			TextView tv = (TextView) getActivity().findViewById(R.id.downloads_folder_field);
 			tv.setText(newDir);
@@ -279,11 +284,6 @@ public class RegistrationFragment extends Fragment {
      	}
      	mFooshare.storage().setSharedDir(arr_UDirs);
 	}
-	
-	
-	
-	
-	
 
 	public void RemoveSharedFolder_OnClick(View view) {
 		
