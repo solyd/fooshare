@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 public class SettingsActivity extends FragmentActivity {
@@ -19,6 +20,7 @@ public class SettingsActivity extends FragmentActivity {
 	private static final String TAG = "SettingsActivity";
 	protected FooshareApplication mFooshare;
 	private BroadcastReceiver mBroadcastReceiver;
+	private RegistrationFragment mRegFragment;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,8 @@ public class SettingsActivity extends FragmentActivity {
         if (fragment == null) {
             
             FragmentTransaction ft = fm.beginTransaction();
-            ft.add(R.id.fragment_reg_content, new RegistrationFragment());
+            mRegFragment = new RegistrationFragment();
+            ft.add(R.id.fragment_reg_content, mRegFragment);
             ft.commit();
         }
         
@@ -66,4 +69,7 @@ public class SettingsActivity extends FragmentActivity {
 		registerReceiver(mBroadcastReceiver, intentFilter);
     }
     
+    public void SharedFolderEntryRemove_OnClick(View view) {
+    	mRegFragment.RemoveSharedFolder_OnClick(view);	
+    }
 }

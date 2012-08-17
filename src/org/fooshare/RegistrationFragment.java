@@ -3,6 +3,7 @@ package org.fooshare;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,14 +20,64 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+class UDirListEntryAdapter extends ArrayAdapter<String> {
+
+    private static final String TAG = "UDirListEntryAdapter";
+    Context context;
+    private int layoutResourceId;
+    private List<String> data ;
+    
+    public UDirListEntryAdapter(Context context, int layoutResourceId, List<String> arr) {
+        super(context, layoutResourceId, arr);
+        this.layoutResourceId = layoutResourceId;
+        this.context = context;
+        this.data = arr;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View row = convertView;
+
+        if (row == null) {
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            row = inflater.inflate(layoutResourceId, parent, false);
+
+            final UDirEntryHolder holder = new UDirEntryHolder();
+            holder.folderName = (TextView) row.findViewById(R.id.shared_folder_name);
+            row.setTag(holder);
+            
+        } else {
+            row = convertView;
+        }
+
+        UDirEntryHolder holder = (UDirEntryHolder) row.getTag();
+        holder.folderName.setText(data.get(position));
+        return row;
+    }
+    
+    /* This function adds an element to the array of entries */
+    @Override
+    public void add(String newEntry) {
+        Log.i(TAG, ("array size  = %d" + (data.size())));
+        data.add(newEntry);
+    }
+
+    static class UDirEntryHolder {
+        Button removeBtn;
+        TextView folderName;
+    }
+}
 
 public class RegistrationFragment extends Fragment {
 
@@ -40,8 +91,8 @@ public class RegistrationFragment extends Fragment {
 	//list items for upload directories
 	protected ArrayList<String> listItems;
 	//string adapter to handle listview
-	ArrayAdapter<String> adapter;
-
+	UDirListEntryAdapter adapter;
+	
 	private AlertDialog.Builder builder;
 	
     @Override
@@ -58,7 +109,8 @@ public class RegistrationFragment extends Fragment {
         mFooshare = (FooshareApplication) curr_activity.getApplication();
 
         listItems = new ArrayList<String>(Arrays.asList(mFooshare.storage().getSharedDir()));
-        adapter = new ArrayAdapter<String>(curr_activity, R.layout.small_list_text, listItems);
+        //adapter = new ArrayAdapter<String>(curr_activity, R.layout.small_list_text, listItems);
+        adapter = new UDirListEntryAdapter(curr_activity, R.layout.shared_folder_entry, listItems);
 
         EditText editText;
 		editText = (EditText)view.findViewById(R.id.name_field);
@@ -135,6 +187,33 @@ public class RegistrationFragment extends Fragment {
 			
 		}};
     
+	OnClickListener OnSharedFolderEntryListener = new OnClickListener(){
+		public void onClick(View view) {
+		
+			ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
+			int position = lv_sharedDir.getPositionForView((View) view.getParent());
+		    final Object o = lv_sharedDir.getItemAtPosition(position);
+	
+			builder.setMessage("Are you sure you want to remove " + o.toString() + " ?")
+		       .setCancelable(false)
+		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		   		    adapter.remove(o.toString());
+				    UpdateSharedDir();
+		           }
+		       })
+		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		                dialog.cancel();
+		           }
+		       });
+	
+			AlertDialog alert = builder.create();
+			alert.show();
+		}
+	};
+	
+		
 	OnItemLongClickListener OnUDirItemClickListener = new OnItemLongClickListener() {
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 			
@@ -184,9 +263,10 @@ public class RegistrationFragment extends Fragment {
 
 		if (requestCode == REQUEST_CODE_PICK_UPLOAD_DIR) {
 			
-			if (adapter.getPosition(newDir) == -1) { //directory not in list
-			
+			if (adapter.getPosition(newDir) == -1) { //directory not in list	
+				
 				adapter.add(newDir);
+				adapter.notifyDataSetChanged();
 				//update upload_dir in storage
 				UpdateSharedDir();
 			}
@@ -200,4 +280,39 @@ public class RegistrationFragment extends Fragment {
      	}
      	mFooshare.storage().setSharedDir(arr_UDirs);
 	}
+	
+	
+	
+	
+	
+
+	public void RemoveSharedFolder_OnClick(View view) {
+		
+		ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
+		int position = lv_sharedDir.getPositionForView((View) view.getParent());
+		final Object o = lv_sharedDir.getItemAtPosition(position);
+
+		builder.setMessage("Are you sure you want to remove " + o.toString() + " ?")
+	       .setCancelable(false)
+	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	   		    adapter.remove(o.toString());
+	   		    adapter.notifyDataSetChanged();
+			    UpdateSharedDir();
+	           }
+	       })
+	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	                dialog.cancel();
+	           }
+	       });
+
+		AlertDialog alert = builder.create();
+		alert.show();
+	  }
+	
+	
+	
+	
+	
 }

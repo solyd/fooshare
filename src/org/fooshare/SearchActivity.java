@@ -33,12 +33,6 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
     List<FileItem> data ;
     List<FileItem> checkedFiles;
 
-    // Context - reference of the activity in which we will use the Adapter
-    // class
-    // Resource id of the layout file we want to use for displaying each
-    // ListView item
-    // An array of FileItem class objects that will be used by the Adapter to
-    // display data.
     public SearchListEntryAdapter(Context context, int layoutResourceId, List<FileItem> arr) {
         super(context, layoutResourceId, arr);
         this.layoutResourceId = layoutResourceId;
