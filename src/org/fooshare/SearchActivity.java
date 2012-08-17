@@ -22,10 +22,9 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -35,299 +34,309 @@ import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 
-class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
-    private static final String TAG = "SearchListEntryAdapter";
 
-    private Context context;
-    private int layoutResourceId;
-    private List<FileItem> data ;
-    private List<FileItem> checkedFiles;
+public class SearchActivity extends Activity { 
 
-    public SearchListEntryAdapter(Context context, int layoutResourceId, List<FileItem> arr) {
-        super(context, layoutResourceId, arr);
-        this.layoutResourceId = layoutResourceId;
-        this.context = context;
-        this.data = arr;
-        this.checkedFiles = new ArrayList<FileItem>();
-    }
+	class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
+		private static final String TAG = "SearchListEntryAdapter";
 
-    public List<FileItem> getCheckedFiles() {
-        return checkedFiles;
-    }
+		private Context context;
+		private int layoutResourceId;
+		private List<FileItem> data ;
+		private List<FileItem> checkedFiles;
 
-    @Override
-    public void clear() {
-        super.clear();
+		private AlertDialog.Builder builder;
 
-        this.checkedFiles.clear();
-        this.data.clear();
-    }
+		public SearchListEntryAdapter(Context context, int layoutResourceId, List<FileItem> arr) {
+			super(context, layoutResourceId, arr);
+			this.layoutResourceId = layoutResourceId;
+			this.context = context;
+			this.data = arr;
+			this.checkedFiles = new ArrayList<FileItem>();
+		}
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View row = convertView;
+		public List<FileItem> getCheckedFiles() {
+			return checkedFiles;
+		}
 
-        if (row == null) {
-            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-            row = inflater.inflate(layoutResourceId, parent, false);
+		@Override
+		public void clear() {
+			super.clear();
 
-            final FileEntryHolder holder = new FileEntryHolder();
-            holder.fileSize = (TextView) row.findViewById(R.id.search_entry_fileSize);
-            holder.fileName = (TextView) row.findViewById(R.id.search_entry_fileName);
-            holder.fileType = (TextView) row.findViewById(R.id.search_entry_fileType);
-            holder.checkBox = (CheckBox) row.findViewById(R.id.checkBox);
+			this.checkedFiles.clear();
+			this.data.clear();
+		}
 
-            holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    FileItem file = (FileItem) holder.checkBox.getTag();
-                    file.setSelected(buttonView.isChecked());
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View row = convertView;
 
-                    boolean isFileInCheckedList = checkedFiles.contains(file);
-                    if (isFileInCheckedList && !file.isSelected())
-                        checkedFiles.remove(file);
-                    else if (!isFileInCheckedList && file.isSelected())
-                        checkedFiles.add(file);
-                }
-            });
-            row.setTag(holder);
-            holder.checkBox.setTag(data.get(position));
-        }
-        else {
-            row = convertView;
-            ((FileEntryHolder) row.getTag()).checkBox.setTag(data.get(position));
-        }
+			if (row == null) {
+				LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+				row = inflater.inflate(layoutResourceId, parent, false);
 
-        // FileItem entry = data.get(position);
-        FileEntryHolder holder = (FileEntryHolder) row.getTag();
+				final FileEntryHolder holder = new FileEntryHolder();
+				holder.fileSize = (TextView) row.findViewById(R.id.search_entry_fileSize);
+				holder.fileName = (TextView) row.findViewById(R.id.search_entry_fileName);
+				holder.fileType = (TextView) row.findViewById(R.id.search_entry_fileType);
+				holder.checkBox = (CheckBox) row.findViewById(R.id.checkBox);
 
-        holder.fileSize.setText(data.get(position).getAdjustedSize());
-        holder.fileName.setText(data.get(position).name());
-        holder.fileType.setText(data.get(position).type());
-        holder.checkBox.setChecked(data.get(position).isSelected());
-        return row;
-    }
+				holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+						FileItem file = (FileItem) holder.checkBox.getTag();
+						file.setSelected(buttonView.isChecked());
 
-    static class FileEntryHolder {
-        CheckBox checkBox;
-        TextView fileName;
-        TextView fileSize;
-        TextView fileType;
-    }
-}
+						boolean isFileInCheckedList = checkedFiles.contains(file);
+						if (isFileInCheckedList && !file.isSelected())
+							checkedFiles.remove(file);
+						else if (!isFileInCheckedList && file.isSelected())
+							checkedFiles.add(file);
+					}
+				});
 
-public class SearchActivity extends Activity {
-    private static final String TAG = "SearchActivity";
+				holder.fileName.setOnLongClickListener(new OnLongClickListener() {
+					public boolean onLongClick(View v) {
+						FileItem fileEntry = (FileItem) holder.checkBox.getTag();
+						String result = null;
+						IPeer peer = ((FooshareApplication) getApplication()).findPeer(fileEntry.ownerId());
+						if (peer == null) {
+							
+							result = String.format("The file owner has disconnected");
+							
+						} else {
+							
+							String peerNickname = peer.name();
+							if (peerNickname == null) {
+								peerNickname = fileEntry.ownerId();
+							}
+							result = String.format("File Info\n\nNAME:  %s\n\nSIZE:  %s\n\nOWNER:  %s", 
+									fileEntry.name(), fileEntry.getAdjustedSize(), peerNickname);
+						}
 
-    private static final String NAME  = "File Name";
-    private static final String TYPE  = "Type";
-    private static final String SIZE  = "Size";
-    private static final String RNAME = "RFile Name";
-    private static final String RTYPE = "RType";
-    private static final String RSIZE = "RSize";
+						builder = new AlertDialog.Builder(v.getContext());
+						builder.setMessage(result);
+						builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) { }
+						});
+						builder.show();
+						return true;
+					}
+				});
 
-    private FooshareApplication _fooshare;
+				row.setTag(holder);
+				holder.checkBox.setTag(data.get(position));
+			}
+			else {
+				row = convertView;
+				((FileEntryHolder) row.getTag()).checkBox.setTag(data.get(position));
+			}
 
-    private SearchListEntryAdapter mSearchListAdapter;
-    private ListView               mSearchListView;
-    private EditText               mSearchBar;
-    private String                 mLastSearchString;
+			// FileItem entry = data.get(position);
+			FileEntryHolder holder = (FileEntryHolder) row.getTag();
 
-    // filteredList holds the list as it appears on the screen
-    private List<FileItem> mFileList;
+			holder.fileSize.setText(data.get(position).getAdjustedSize());
+			holder.fileName.setText(data.get(position).name());
+			holder.fileType.setText(data.get(position).type());
+			holder.checkBox.setChecked(data.get(position).isSelected());
+			return row;
+		}
 
-    // specifies how to sort the list
-    private String sortFlag = NAME;
-    
-    private AlertDialog.Builder builder;
-    private Handler _uiHandler = new Handler(Looper.getMainLooper());
-	
-    private class PeerListInSearchChanged implements Delegate<List<IPeer>> {
-        public void invoke(final List<IPeer> newPeerList) {
-            _uiHandler.post(new Runnable() {
-                public void run() {
-                	// set the number of peers connected
-                	String numPeers = Integer.toString(newPeerList.size());
-                	((TextView)findViewById(R.id.number_peers_connected)).setText(numPeers);
-                }
-            });
-        }
-    }
+		class FileEntryHolder {
+			CheckBox checkBox;
+			TextView fileName;
+			TextView fileSize;
+			TextView fileType;
+		}
+	}
 
-    @Override
-    protected void onResume() {
-        Log.d(TAG, "onResume");
-        super.onResume();
+	//public class SearchActivity extends Activity {
+	private static final String TAG = "SearchActivity";
 
-        IPeer selectedPeer = _fooshare.getSelectedPeer();
-        if (selectedPeer != null) {
-            _fooshare.setSelectedPeer(null);
-            mFileList = _fooshare.getAllSharedFiles(new PeerIdFilePredicate(selectedPeer));
-        }
-        else {
-            mFileList = _fooshare.getAllSharedFiles(new Predicate<FileItem>() {
-                public boolean pred(FileItem ele) {
-                    return true;
-                }
-            });
-        }
+	private static final String NAME  = "File Name";
+	private static final String TYPE  = "Type";
+	private static final String SIZE  = "Size";
+	private static final String RNAME = "RFile Name";
+	private static final String RTYPE = "RType";
+	private static final String RSIZE = "RSize";
 
-        sortFileList();
-        mSearchListAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, mFileList);
-        mSearchListView.setAdapter(mSearchListAdapter);
-        mSearchListView.requestFocus();
-    }
+	private FooshareApplication _fooshare;
 
-    public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate");
+	private SearchListEntryAdapter mSearchListAdapter;
+	private ListView               mSearchListView;
+	private EditText               mSearchBar;
+	private String                 mLastSearchString;
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.search_activity);
-        findViewById(R.id.arrow2).setVisibility(View.INVISIBLE);
-        findViewById(R.id.arrow3).setVisibility(View.INVISIBLE);
-        _fooshare = (FooshareApplication) getApplication();
+	// filteredList holds the list as it appears on the screen
+	private List<FileItem> mFileList;
 
-        mFileList = _fooshare.getAllSharedFiles(new Predicate<FileItem>() {
-            public boolean pred(FileItem ele) {
-                return true;
-            }
-        });
-        sortFileList();
+	// specifies how to sort the list
+	private String sortFlag = NAME;
 
-        mSearchListAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, mFileList);
-        mSearchListView = (ListView) findViewById(R.id.search_list);
-        mSearchListView.setAdapter(mSearchListAdapter);
-        mSearchListView.requestFocus();
-        mSearchListView.setClickable(true);
-        mSearchListView.setOnItemLongClickListener(OnSearchListItemClickListener);
 
-        mSearchBar = (EditText) findViewById(R.id.search_field);
-        
-        builder = new AlertDialog.Builder(this);
-        _fooshare.onPeerListChanged.subscribe(new PeerListInSearchChanged());
-    }
-    
-	OnItemLongClickListener OnSearchListItemClickListener = new OnItemLongClickListener() {
-		public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-			
-		    final FileItem fileEntry = mSearchListAdapter.getItem(position);
-		    
-		    String peerNickname = _fooshare.findPeer(fileEntry.ownerId()).name();
-		    if (peerNickname == null) {
-		    	peerNickname = fileEntry.ownerId();
-		    }
-		    
-		    String result = String.format("File description/n/nname: %s/nsize: %sowner: %s", 
-		    		fileEntry.name(), fileEntry.getAdjustedSize(), peerNickname); 
-		    
-		    builder.setMessage(result);
-		    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) { }
-		       });
-		    builder.show();
+	private Handler _uiHandler = new Handler(Looper.getMainLooper());
 
-			return true;
-		  }
-	   };
-    
-    // Runs when user clicks on the peers status
-    public void onNumberPeersClick(View view) {
+	private class PeerListInSearchChanged implements Delegate<List<IPeer>> {
+		public void invoke(final List<IPeer> newPeerList) {
+			_uiHandler.post(new Runnable() {
+				public void run() {
+					// set the number of peers connected
+					String numPeers = Integer.toString(newPeerList.size());
+					((TextView)findViewById(R.id.number_peers_connected)).setText(numPeers);
+				}
+			});
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		Log.d(TAG, "onResume");
+		super.onResume();
+
+		IPeer selectedPeer = _fooshare.getSelectedPeer();
+		if (selectedPeer != null) {
+			_fooshare.setSelectedPeer(null);
+			mFileList = _fooshare.getAllSharedFiles(new PeerIdFilePredicate(selectedPeer));
+		}
+		else {
+			mFileList = _fooshare.getAllSharedFiles(new Predicate<FileItem>() {
+				public boolean pred(FileItem ele) {
+					return true;
+				}
+			});
+		}
+
+		sortFileList();
+		mSearchListAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, mFileList);
+		mSearchListView.setAdapter(mSearchListAdapter);
+		mSearchListView.requestFocus();
+	}
+
+	public void onCreate(Bundle savedInstanceState) {
+		Log.d(TAG, "onCreate");
+
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.search_activity);
+		findViewById(R.id.arrow2).setVisibility(View.INVISIBLE);
+		findViewById(R.id.arrow3).setVisibility(View.INVISIBLE);
+		_fooshare = (FooshareApplication) getApplication();
+
+		mFileList = _fooshare.getAllSharedFiles(new Predicate<FileItem>() {
+			public boolean pred(FileItem ele) {
+				return true;
+			}
+		});
+		sortFileList();
+
+		mSearchListAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, mFileList);
+		mSearchListView = (ListView) findViewById(R.id.search_list);
+		mSearchListView.setAdapter(mSearchListAdapter);
+		mSearchListView.requestFocus();
+		mSearchListView.setClickable(true);
+
+		mSearchBar = (EditText) findViewById(R.id.search_field);
+
+		_fooshare.onPeerListChanged.subscribe(new PeerListInSearchChanged());
+	}
+
+	// Runs when user clicks on the peers status
+	public void onNumberPeersClick(View view) {
 		TabHost tabhost = ((TabHost) getParent().findViewById(android.R.id.tabhost));
 		tabhost.setCurrentTabByTag(getResources().getString (R.string.PEERS_TAB_TAG));
-    }
+	}
 
-    // Runs when the user presses S. It filters the list according to what is
-    // written in the search field.
-    public void onSearchListClick(View btn) {
-        mLastSearchString = mSearchBar.getText().toString();
+	// Runs when the user presses S. It filters the list according to what is
+	// written in the search field.
+	public void onSearchListClick(View btn) {
+		mLastSearchString = mSearchBar.getText().toString();
 
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(mSearchBar.getWindowToken(), 0);
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(mSearchBar.getWindowToken(), 0);
 
-        mFileList = _fooshare.getAllSharedFiles(new SubStringPredicate(mLastSearchString));
+		mFileList = _fooshare.getAllSharedFiles(new SubStringPredicate(mLastSearchString));
 
-        sortFileList();
-        mSearchListAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, mFileList);
-        mSearchListView.setAdapter(mSearchListAdapter);
-    }
+		sortFileList();
+		mSearchListAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, mFileList);
+		mSearchListView.setAdapter(mSearchListAdapter);
+	}
 
 
-    public void sortFileList() {
-        if (sortFlag.equals(NAME))
-            Collections.sort(mFileList, new ComparatorByName());
-        else if (sortFlag.equals(SIZE))
-            Collections.sort(mFileList, new ComparatorBySize());
-        else if (sortFlag.equals(TYPE))
-            Collections.sort(mFileList, new ComparatorByType());
-        else
-            Collections.reverse(mFileList);
-    }
+	public void sortFileList() {
+		if (sortFlag.equals(NAME))
+			Collections.sort(mFileList, new ComparatorByName());
+		else if (sortFlag.equals(SIZE))
+			Collections.sort(mFileList, new ComparatorBySize());
+		else if (sortFlag.equals(TYPE))
+			Collections.sort(mFileList, new ComparatorByType());
+		else
+			Collections.reverse(mFileList);
+	}
 
-    public void sortButtonClicked(View view) {
+	public void sortButtonClicked(View view) {
 
-        String txt = ((TextView) view).getText().toString();
+		String txt = ((TextView) view).getText().toString();
 
-        // Here it is decided what kind of sort should occur and the arrows adjust
-         if (txt.equals(NAME)) {
-            if (sortFlag.equals(NAME)) {
-                sortFlag = RNAME;
-                ((ImageView) findViewById(R.id.arrow1)).setImageResource(R.drawable.arrow_down);
-            }
-            else {
-                sortFlag = NAME;
-                ((ImageView) findViewById(R.id.arrow1)).setImageResource(R.drawable.arrow_up);
-                findViewById(R.id.arrow1).setVisibility(View.VISIBLE);
-                findViewById(R.id.arrow2).setVisibility(View.INVISIBLE);
-                findViewById(R.id.arrow3).setVisibility(View.INVISIBLE);
-            }
-        }
-        else if (txt.equals(TYPE)) {
-            if (sortFlag.equals(TYPE)) {
-                sortFlag = RTYPE;
-                ((ImageView) findViewById(R.id.arrow3)).setImageResource(R.drawable.arrow_down);
-            }
-            else {
-                sortFlag = TYPE;
-                ((ImageView) findViewById(R.id.arrow3)).setImageResource(R.drawable.arrow_up);
-                findViewById(R.id.arrow3).setVisibility(View.VISIBLE);
-                findViewById(R.id.arrow2).setVisibility(View.INVISIBLE);
-                findViewById(R.id.arrow1).setVisibility(View.INVISIBLE);
-            }
-        }
-        else {
-            if (sortFlag.equals(SIZE)) {
-                sortFlag = RSIZE;
-                ((ImageView) findViewById(R.id.arrow2)).setImageResource(R.drawable.arrow_down);
-            }
-            else {
-                ((ImageView) findViewById(R.id.arrow2)).setImageResource(R.drawable.arrow_up);
-                findViewById(R.id.arrow2).setVisibility(View.VISIBLE);
-                findViewById(R.id.arrow3).setVisibility(View.INVISIBLE);
-                findViewById(R.id.arrow1).setVisibility(View.INVISIBLE);
-                sortFlag = SIZE;
-            }
-        }
+		// Here it is decided what kind of sort should occur and the arrows adjust
+		if (txt.equals(NAME)) {
+			if (sortFlag.equals(NAME)) {
+				sortFlag = RNAME;
+				((ImageView) findViewById(R.id.arrow1)).setImageResource(R.drawable.arrow_down);
+			}
+			else {
+				sortFlag = NAME;
+				((ImageView) findViewById(R.id.arrow1)).setImageResource(R.drawable.arrow_up);
+				findViewById(R.id.arrow1).setVisibility(View.VISIBLE);
+				findViewById(R.id.arrow2).setVisibility(View.INVISIBLE);
+				findViewById(R.id.arrow3).setVisibility(View.INVISIBLE);
+			}
+		}
+		else if (txt.equals(TYPE)) {
+			if (sortFlag.equals(TYPE)) {
+				sortFlag = RTYPE;
+				((ImageView) findViewById(R.id.arrow3)).setImageResource(R.drawable.arrow_down);
+			}
+			else {
+				sortFlag = TYPE;
+				((ImageView) findViewById(R.id.arrow3)).setImageResource(R.drawable.arrow_up);
+				findViewById(R.id.arrow3).setVisibility(View.VISIBLE);
+				findViewById(R.id.arrow2).setVisibility(View.INVISIBLE);
+				findViewById(R.id.arrow1).setVisibility(View.INVISIBLE);
+			}
+		}
+		else {
+			if (sortFlag.equals(SIZE)) {
+				sortFlag = RSIZE;
+				((ImageView) findViewById(R.id.arrow2)).setImageResource(R.drawable.arrow_down);
+			}
+			else {
+				((ImageView) findViewById(R.id.arrow2)).setImageResource(R.drawable.arrow_up);
+				findViewById(R.id.arrow2).setVisibility(View.VISIBLE);
+				findViewById(R.id.arrow3).setVisibility(View.INVISIBLE);
+				findViewById(R.id.arrow1).setVisibility(View.INVISIBLE);
+				sortFlag = SIZE;
+			}
+		}
 
-        sortFileList();
-        mSearchListAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, mFileList);
-        mSearchListView.setAdapter(mSearchListAdapter);
+		sortFileList();
+		mSearchListAdapter = new SearchListEntryAdapter(this, R.layout.search_list_entry, mFileList);
+		mSearchListView.setAdapter(mSearchListAdapter);
 
-    }
+	}
 
-    public void downloadCheckedClicked(View view) {
-        final List<FileItem> checkedItems = mSearchListAdapter.getCheckedFiles();
-        if (checkedItems.size() == 0)
-            return;
+	public void downloadCheckedClicked(View view) {
+		final List<FileItem> checkedItems = mSearchListAdapter.getCheckedFiles();
+		if (checkedItems.size() == 0)
+			return;
 
-        for (FileItem fi : checkedItems) {
-            _fooshare.startDownloadService(fi);
-            fi.setSelected(false);
-        }
-        mSearchListAdapter.notifyDataSetChanged();
+		for (FileItem fi : checkedItems) {
+			_fooshare.startDownloadService(fi);
+			fi.setSelected(false);
+		}
+		mSearchListAdapter.notifyDataSetChanged();
 
-        ((TabHost) getParent().findViewById(android.R.id.tabhost)).setCurrentTabByTag(getResources().getString(R.string.DOWNLOADS_TAB_TAG));
-    }
+		((TabHost) getParent().findViewById(android.R.id.tabhost)).setCurrentTabByTag(getResources().getString(R.string.DOWNLOADS_TAB_TAG));
+	}
 
-    /*
+	/*
     // My function for testing. I use it to create lists
     public ArrayList<FileItem> creatNewList() {
 
@@ -359,31 +368,31 @@ public class SearchActivity extends Activity {
         }
         return newList;
     }
-    */
+	 */
 }
 
 class ComparatorByName implements Comparator<FileItem> {
-    public int compare(FileItem f1, FileItem f2) {
-        return f1.name().compareTo(f2.name());
-    }
+	public int compare(FileItem f1, FileItem f2) {
+		return f1.name().compareTo(f2.name());
+	}
 }
 
 class ComparatorByType implements Comparator<FileItem> {
-    public int compare(FileItem f1, FileItem f2) {
-        return f1.category().compareTo(f2.category());
-    }
+	public int compare(FileItem f1, FileItem f2) {
+		return f1.category().compareTo(f2.category());
+	}
 }
 
 class ComparatorBySize implements Comparator<FileItem> {
 
-    public int compare(FileItem f1, FileItem f2) {
-        if (f1.sizeInBytes() < f2.sizeInBytes())
-            return -1;
-        else if (f1.sizeInBytes() == f2.sizeInBytes())
-            return 0;
-        else
-            return 1;
-    }
+	public int compare(FileItem f1, FileItem f2) {
+		if (f1.sizeInBytes() < f2.sizeInBytes())
+			return -1;
+		else if (f1.sizeInBytes() == f2.sizeInBytes())
+			return 0;
+		else
+			return 1;
+	}
 }
 
 
