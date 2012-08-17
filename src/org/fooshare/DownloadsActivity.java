@@ -200,6 +200,8 @@ public class DownloadsActivity extends Activity {
 
         for (Download d : _downloadsList)
             d.setUpdateReceiver(_downloadUpdateReceiver);
+        
+
 
         _downloadsListAdapter = new DownloadItemAdapter(this, R.layout.list_downloads_entry, _downloadsList);
         _downloadsListView = (ListView) findViewById(R.id.list_downloads);
@@ -240,6 +242,9 @@ public class DownloadsActivity extends Activity {
         });
         for (Download d : _downloadsList)
             d.setUpdateReceiver(_downloadUpdateReceiver);
+        
+        // TODO remove
+        _downloadsList.add(new Download(_fooshare, "", 0, new FileItem("/tmp/song.mp3",4096, "p222" ), null));
 
         _downloadsListAdapter = new DownloadItemAdapter(this, R.layout.list_downloads_entry, _downloadsList);
         _downloadsListView.setAdapter(_downloadsListAdapter);
