@@ -23,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TabHost;
 
 public class DemoActivity extends Activity {
 private static final String TAG = "DemoActivity";
@@ -112,6 +113,7 @@ private static final String TAG = "DemoActivity";
         _fooshare.onPeerListChanged.subscribe(new PeerListChanged());
         _fooshare.checkin();
 
+        _peerAdapter.add("click me");
         // ++++++++++++++++++++++++++++++++++++++++
 
         _peerListView.setOnItemClickListener(new OnItemClickListener() {
@@ -138,6 +140,13 @@ private static final String TAG = "DemoActivity";
                 _fooshare.startDownloadService(f);
             }
         });
+        
+        _peerListView.setOnItemClickListener(new OnItemClickListener() {
+        	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+        		TabHost tabhost = ((TabHost) getParent().findViewById(android.R.id.tabhost));
+        		tabhost.setCurrentTab(0);
+        	}
+		});
     }
 
     ProgressDialog _progressDialog;

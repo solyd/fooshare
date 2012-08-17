@@ -5,11 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.fooshare.R;
-import org.fooshare.R.drawable;
-import org.fooshare.R.id;
-import org.fooshare.R.layout;
-import org.fooshare.R.string;
 import org.fooshare.predicates.PeerIdFilePredicate;
 import org.fooshare.predicates.Predicate;
 import org.fooshare.predicates.SubStringPredicate;
@@ -39,12 +34,6 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
     private List<FileItem> data ;
     private List<FileItem> checkedFiles;
 
-    // Context - reference of the activity in which we will use the Adapter
-    // class
-    // Resource id of the layout file we want to use for displaying each
-    // ListView item
-    // An array of FileItem class objects that will be used by the Adapter to
-    // display data.
     public SearchListEntryAdapter(Context context, int layoutResourceId, List<FileItem> arr) {
         super(context, layoutResourceId, arr);
         this.layoutResourceId = layoutResourceId;
@@ -83,10 +72,12 @@ class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     FileItem file = (FileItem) holder.checkBox.getTag();
                     file.setSelected(buttonView.isChecked());
-                    if (file.isSelected())
-                        checkedFiles.add(file);
-                    else
+
+                    boolean isFileInCheckedList = checkedFiles.contains(file);
+                    if (isFileInCheckedList && !file.isSelected())
                         checkedFiles.remove(file);
+                    else if (!isFileInCheckedList && file.isSelected())
+                        checkedFiles.add(file);
                 }
             });
             row.setTag(holder);

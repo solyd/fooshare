@@ -54,4 +54,8 @@ public class RegistrationActivity extends FragmentActivity {
 			RegistrationActivity.this.finish();
 		}
 	}
+	
+    public void SharedFolderEntryRemove_OnClick(View view) {
+    	mRegFragment.RemoveSharedFolder_OnClick(view);	
+    }
 }
