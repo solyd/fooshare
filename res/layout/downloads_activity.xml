@@ -19,12 +19,6 @@
 	   				android:layout_height="wrap_content"
 	   				android:text = "@string/downloads"/> 
 	   		
-	   		<Button android:text="@string/updateListBtn"
-	   				android:id="@+id/updateButton"
-	    			android:layout_width="wrap_content"
-	    			android:layout_height="wrap_content"
-	     			android:onClick="onDemoClick"/>
-	   		
 	   	</LinearLayout>
    	
 	    <ListView 

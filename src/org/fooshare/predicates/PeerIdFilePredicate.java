@@ -6,7 +6,7 @@ import org.fooshare.IPeer;
 public class PeerIdFilePredicate implements Predicate<FileItem> {
     private static final String TAG = "PeerIdFilePredicate";
 
-    private String _peerID = null;
+    private String _peerID;
 
     public PeerIdFilePredicate(IPeer peer) {
     	if (peer != null) {
@@ -15,7 +15,7 @@ public class PeerIdFilePredicate implements Predicate<FileItem> {
     }
 
     public boolean pred(FileItem fileItem) {
-        return (fileItem.getOwnerId() == _peerID);
+        return fileItem.ownerId().equals(_peerID);
     }
 }
 

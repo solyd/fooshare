@@ -6,33 +6,35 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.fooshare.R;
+import org.fooshare.R.drawable;
+import org.fooshare.R.id;
+import org.fooshare.R.layout;
+import org.fooshare.R.string;
+import org.fooshare.events.Delegate;
 import org.fooshare.predicates.Predicate;
-import org.fooshare.predicates.SubStringPredicate;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 
 class DPeer implements IPeer{
 	String mName;
 	Collection<FileItem> mFiles;
-	
+
 	public DPeer (String _name, Collection<FileItem> _files) {
 		mName = _name;
 		mFiles = _files;
@@ -48,7 +50,7 @@ class DPeer implements IPeer{
 
 	public Collection<FileItem> files() {
 		return mFiles;
-	}	
+	}
 }
 
 
@@ -57,7 +59,7 @@ class PeerListEntryAdapter extends ArrayAdapter<IPeer> {
     private static final String TAG = "PeerListEntryAdapter";
     Context context;
     int layoutResourceId;
-    List<IPeer> data ;
+    List<IPeer> data;
     List<IPeer> checkedFiles;
 
     // Context - reference of the activity in which we will use the Adapter
@@ -108,7 +110,7 @@ class PeerListEntryAdapter extends ArrayAdapter<IPeer> {
     /* This function adds an element to the array of entries */
     @Override
     public void add(IPeer newEntry) {
-        Log.i(TAG, ("array size  = %d" + (data.size())));
+        //Log.i(TAG, ("array size  = %d" + (data.size())));
         data.add(newEntry);
     }
 
@@ -119,72 +121,84 @@ class PeerListEntryAdapter extends ArrayAdapter<IPeer> {
 }
 
 public class PeersActivity extends Activity {
-private static final String TAG = "PeersActivity";
+    private static final String TAG = "PeersActivity";
 
     private static final String NAME = "File Name";
     private static final String SIZE = "Size";
     private static final String RNAME = "RFile Name";
     private static final String RSIZE = "RSize";
 
+    private Handler _uiHandler = new Handler(Looper.getMainLooper());
+
+    private class PeerListChanged implements Delegate<List<IPeer>> {
+        public void invoke(final List<IPeer> newPeerList) {
+            _uiHandler.post(new Runnable() {
+                public void run() {
+                    mPeerList.clear();
+                    mPeerList.addAll(newPeerList);
+                    mPeersListAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
     private FooshareApplication _fooshare;
 
-    private PeerListEntryAdapter mAdapter;
+    private PeerListEntryAdapter mPeersListAdapter;
     private ListView mPeersListView;
 
-    // mList always holds the list of ALL available files
-    private List<IPeer> mList;
-    // filteredList holds the list as it appears on the screen
-    private List<IPeer> filteredList;
+
+    private List<IPeer> mPeerList;
     // specifies how to sort the list
     private String sortFlag = NAME;
 
     @Override
     protected void onResume() {
-        Log.i(TAG, "onResume of peers activity");
         super.onResume();
+        Log.d(TAG, "onResume of peers activity");
+        _fooshare.checkin();
+
+        mPeerList.clear();
+        mPeerList.addAll(_fooshare.getPeers(new Predicate<IPeer>() {
+            public boolean pred(IPeer ele) {
+                return true;
+            }
+        }));
+        mPeersListAdapter.notifyDataSetChanged();
     }
 
-
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate of peer activity");
+        Log.d(TAG, "onCreate of peer activity");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.peers_activity);
         findViewById(R.id.p_arrow2).setVisibility(View.INVISIBLE);
         _fooshare = (FooshareApplication) getApplication();
 
-        mList = _fooshare.getPeers(new Predicate<IPeer>() {
+        mPeerList = _fooshare.getPeers(new Predicate<IPeer>() {
             public boolean pred(IPeer ele) {
                 return true;
             }
         });
-        
-        // TODO - delete!!
-        //if (mList == null || mList.size()==0) {
-        //	mList = creatNewList();
-        //}
 
-        filteredList = new ArrayList<IPeer>(mList);
-        sortFilteredList();
-        Log.d(TAG, "after sort");
-        mAdapter = new PeerListEntryAdapter(this, R.layout.peer_list_entry, filteredList);
-        Log.d(TAG, "after creating adapter");
+
+        sortPeerList();
+        mPeersListAdapter = new PeerListEntryAdapter(this, R.layout.peer_list_entry, mPeerList);
         mPeersListView = (ListView) findViewById(R.id.peers_list);
+        mPeersListView.setAdapter(mPeersListAdapter);
 
-        mPeersListView.setAdapter(mAdapter);
-        Log.d(TAG, "after setting adapter");
-        
         mPeersListView.setOnItemClickListener(new OnItemClickListener() {
         	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-        		
-        		IPeer peer = (IPeer) mAdapter.getItem(position);
-        		_fooshare.setChosenPeer(peer);
-        		
+
+        		IPeer peer = (IPeer) mPeersListAdapter.getItem(position);
+        		_fooshare.setSelectedPeer(peer);
+
         		TabHost tabhost = ((TabHost) getParent().findViewById(android.R.id.tabhost));
-        		tabhost.setCurrentTabByTag(getResources().getString (R.string.SEARCH_TAB_TAG));        		
+        		tabhost.setCurrentTabByTag(getResources().getString (R.string.SEARCH_TAB_TAG));
         	}
 		});
 
+        _fooshare.onPeerListChanged.subscribe(new PeerListChanged());
     }
 
 //    // Runs when the user presses S. It filters the list according to what is
@@ -212,7 +226,7 @@ private static final String TAG = "PeersActivity";
 
     // My function for testing. I use it to create lists
     public ArrayList<IPeer> creatNewList() {
-    	Collection<FileItem> _sharedFiles = new ArrayList<FileItem>();   
+    	Collection<FileItem> _sharedFiles = new ArrayList<FileItem>();
         _sharedFiles.add(new FileItem("/Tom.mp3", (long) 1025, "2345"));
         _sharedFiles.add(new FileItem("//Barbara.mobi", (long) 1023, "67324"));
         _sharedFiles.add(new FileItem("////Tobi.avi", (long) 848483932, "1234"));
@@ -224,14 +238,14 @@ private static final String TAG = "PeersActivity";
         _sharedFiles.add(new FileItem("\\//Tom.mp4", (long) 356747, "1234"));
         _sharedFiles.add(new FileItem("\\///Paris.mobi", (long) 234234, "1234"));
         _sharedFiles.add(new FileItem("\\///Pipi.Kaki.avi", (long) 3429095, "264"));
-        
-        
+
+
         ArrayList<IPeer> list = new ArrayList<IPeer>();
         list.add(new DPeer("Abraham", new ArrayList<FileItem>()));
         list.add(new DPeer("Binyamin", _sharedFiles));
         list.add(new DPeer("Daniel", _sharedFiles));
         list.add(new DPeer("Gidon", new ArrayList<FileItem>()));
-        
+
         return list;
 
     }
@@ -248,19 +262,20 @@ private static final String TAG = "PeersActivity";
     }
     */
 
-    public void sortFilteredList() {
-        Log.d(TAG, "in sort");
+    public void sortPeerList() {
+        Log.d(TAG, "Sorting peers list");
+
         if (sortFlag.equals(NAME))
-            Collections.sort(filteredList, new PeerComparatorByName());
+            Collections.sort(mPeerList, new PeerComparatorByName());
         else if (sortFlag.equals(SIZE))
-            Collections.sort(filteredList, new PeerComparatorBySize());
+            Collections.sort(mPeerList, new PeerComparatorBySize());
         else
-            Collections.reverse(filteredList);
+            Collections.reverse(mPeerList);
     }
 
     public void sortButtonClicked(View view) {
 
-        int viewID =((TextView) view).getId(); 
+        int viewID =((TextView) view).getId();
 
         // Here it is decided what kind of sort should occur and the arrows adjust
          if (viewID == R.id.peers_activity_name) {
@@ -288,10 +303,9 @@ private static final String TAG = "PeersActivity";
             }
         }
 
-        sortFilteredList();
-        mAdapter = new PeerListEntryAdapter(this, R.layout.peer_list_entry, filteredList);
-        mPeersListView.setAdapter(mAdapter);
-
+        sortPeerList();
+        mPeersListAdapter = new PeerListEntryAdapter(this, R.layout.peer_list_entry, mPeerList);
+        mPeersListView.setAdapter(mPeersListAdapter);
     }
 
 //    public void downloadCheckedClicked(View view) {
@@ -301,15 +315,12 @@ private static final String TAG = "PeersActivity";
 }
 
 class PeerComparatorByName implements Comparator<IPeer> {
-
     public int compare(IPeer f1, IPeer f2) {
         return f1.name().compareTo(f2.name());
     }
-
 }
 
 class PeerComparatorBySize implements Comparator<IPeer> {
-
     public int compare(IPeer f1, IPeer f2) {
         if (f1.files().size() < f2.files().size())
             return -1;

@@ -14,7 +14,7 @@
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
      			android:textColor ="#000080"
-     			android:onClick="searchList"
+     			android:onClick="onSearchListClick"
      			android:layout_alignParentRight="true">
  	 		</Button>
  	 	
@@ -118,11 +118,10 @@
    		android:layout_weight="9">   
     </ListView> 
     
-    <Button android:text="Download Selected Files"
+    <Button android:text="Download Selected"
    			android:id="@+id/downloadCheckedBtn"
     		android:layout_width="wrap_content"
     		android:layout_height="0dp"
-    		android:textColor ="#000080"
     		android:onClick="downloadCheckedClicked"
     		android:layout_gravity="center"
     		android:layout_weight="1"

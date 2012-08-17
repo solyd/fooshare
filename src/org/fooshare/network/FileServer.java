@@ -3,7 +3,6 @@ package org.fooshare.network;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
@@ -12,10 +11,18 @@ import java.util.Arrays;
 
 import org.fooshare.FooshareApplication;
 
+import android.os.ResultReceiver;
 import android.util.Log;
 
 public class FileServer {
     private static final String TAG = "FileServer";
+
+    public static enum UploadStatus {
+        UPLOADING,
+        FINISHED,
+        CANCELED,
+        FAILED
+    }
 
     private FooshareApplication _fooshare;
     private int                 _port;
@@ -38,11 +45,12 @@ public class FileServer {
             public void run() {
                 try {
                     while (true) {
-                        new FileTransferSession(_servSocket.accept());
+                        Upload up = new Upload(_servSocket.accept());
+                        _fooshare.addUpload(up);
                     }
                 }
                 catch (IOException e) {
-                    Log.i(TAG, Log.getStackTraceString(e));
+                    Log.i(TAG, "File server shutting down now...");
                 }
             }
         });
@@ -79,16 +87,45 @@ public class FileServer {
         return _port;
     }
 
-    private class FileTransferSession implements Runnable {
-        private Socket _clientSocket;
+    public class Upload implements Runnable {
+        private Socket                _clientSocket;
+        private volatile UploadStatus _status;
+        private volatile long         _progressInBytes = 0;
+        private volatile long         _fileLen = 0;
+        private File                  _requestedFile;
+
+        private ResultReceiver _updateReceiver;
+        private Object         _updateLock = new Object();
 
         private static final int BUFFER_SIZE = 4096; // bytes
 
-        public FileTransferSession(Socket clientSocket) {
+        public Upload(Socket clientSocket) {
             _clientSocket = clientSocket;
+            _status = UploadStatus.UPLOADING;
             Thread t = new Thread(this);
             t.setDaemon(true);
             t.start();
+        }
+
+        public String getFileName() {
+            if (_requestedFile == null)
+                return null;
+            return _requestedFile.getName();
+        }
+
+        public void setUpdateReceiver(ResultReceiver updateReceiver) {
+            synchronized (_updateLock) {
+                _updateReceiver = updateReceiver;
+            }
+        }
+
+        public int getPercentageProgress() {
+            assert(_fileLen != 0);
+            return (int) (_progressInBytes * 100.0 / _fileLen);
+        }
+
+        public UploadStatus status() {
+            return _status;
         }
 
         public void run() {
@@ -107,31 +144,52 @@ public class FileServer {
                 Log.i(TAG, "Requested file is: " + requestedFileName);
 
                 BufferedOutputStream out = new BufferedOutputStream(_clientSocket.getOutputStream(), BUFFER_SIZE);
-                File requestedFile = new File(requestedFileName);
-                Log.i(TAG, "Uploading file of size: " + requestedFile.length());
-
+                _requestedFile = new File(requestedFileName);
                 BufferedInputStream fileIn = _fooshare.storage().getStream4Upload(requestedFileName);
                 if (fileIn == null) {
                     Log.e(TAG, "Couldn't open InputStream to read file " + requestedFileName);
                     _clientSocket.close();
                     return;
                 }
+                Log.i(TAG, "Uploading file of size: " + _requestedFile.length());
+                _fileLen = _requestedFile.length();
 
-                int totalUploadedBytes = 0;
                 int readBytes = 0;
                 while ((readBytes = fileIn.read(buf)) > 0) {
                     out.write(buf, 0, readBytes);
-                    totalUploadedBytes += readBytes;
+                    _progressInBytes += readBytes;
+
+                    // TODO determine when its best to update and remove magic numbers
+                    if (_progressInBytes % 4096 == 0 || _fileLen < 32768) {
+
+                        // publish progress to ui
+                        synchronized (_updateLock) {
+                            if (_updateReceiver != null) {
+                                _updateReceiver.send(0, null);
+                            }
+                        }
+                    }
+
+
                 }
                 out.flush();
 
                 fileIn.close();
                 _clientSocket.close();
 
-                Log.i(TAG, String.format("Finished uploading %s, total: %d", requestedFileName, totalUploadedBytes));
+                Log.i(TAG, String.format("Finished uploading %s, total: %d", requestedFileName, _progressInBytes));
             }
             catch (IOException e) {
                 Log.i(TAG, Log.getStackTraceString(e));
+            }
+            finally {
+                synchronized (_updateLock) {
+                    if (_updateReceiver != null) {
+                        _updateReceiver.send(0, null);
+                    }
+                }
+
+                _status = UploadStatus.FINISHED;
             }
         }
 

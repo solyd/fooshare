@@ -18,6 +18,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.fooshare.R;
+import org.fooshare.R.drawable;
+import org.fooshare.R.id;
+import org.fooshare.R.layout;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -42,14 +45,14 @@ import android.widget.Toast;
 
 public class FileBrowserActivity extends Activity {
     // Intent Action Constants
-    public static final String INTENT_ACTION_SELECT_DIR = "ua.com.vassiliev.androidfilebrowser.SELECT_DIRECTORY_ACTION";
+    public static final String INTENT_ACTION_SELECT_DIR  = "ua.com.vassiliev.androidfilebrowser.SELECT_DIRECTORY_ACTION";
     public static final String INTENT_ACTION_SELECT_FILE = "ua.com.vassiliev.androidfilebrowser.SELECT_FILE_ACTION";
 
     // Intent parameters names constants
-    public static final String startDirectoryParameter = "ua.com.vassiliev.androidfilebrowser.directoryPath";
+    public static final String startDirectoryParameter  = "ua.com.vassiliev.androidfilebrowser.directoryPath";
     public static final String returnDirectoryParameter = "ua.com.vassiliev.androidfilebrowser.directoryPathRet";
-    public static final String returnFileParameter = "ua.com.vassiliev.androidfilebrowser.filePathRet";
-    public static final String showCannotReadParameter = "ua.com.vassiliev.androidfilebrowser.showCannotRead";
+    public static final String returnFileParameter      = "ua.com.vassiliev.androidfilebrowser.filePathRet";
+    public static final String showCannotReadParameter  = "ua.com.vassiliev.androidfilebrowser.showCannotRead";
 
     // Stores names of traversed directories
     ArrayList<String> pathDirsList = new ArrayList<String>();

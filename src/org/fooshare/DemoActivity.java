@@ -3,6 +3,10 @@ package org.fooshare;
 import java.util.Collection;
 import java.util.List;
 
+import org.fooshare.R;
+import org.fooshare.R.id;
+import org.fooshare.R.layout;
+import org.fooshare.R.menu;
 import org.fooshare.events.Delegate;
 import org.fooshare.network.DownloadService;
 
@@ -33,14 +37,14 @@ private static final String TAG = "DemoActivity";
     private ListView _peerListView;
     private ListView _fileListView;
 
-    Handler handler = new Handler(Looper.getMainLooper());
+    private Handler _uiHandler = new Handler(Looper.getMainLooper());
 
     protected class PeerDiscovered implements Delegate<IPeer> {
         public void invoke(IPeer peer) {
             final String peerId = peer.id();
             final String peerName = peer.name();
             final Collection<FileItem> peerFiles = peer.files();
-            handler.post(new Runnable() {
+            _uiHandler.post(new Runnable() {
                 public void run() {
                     _peerAdapter.add(peerId);
 
@@ -56,7 +60,7 @@ private static final String TAG = "DemoActivity";
             final String peerId = peer.id();
             final String peerName = peer.name();
             final Collection<FileItem> peerFiles = peer.files();
-            handler.post(new Runnable() {
+            _uiHandler.post(new Runnable() {
                 public void run() {
                     _peerAdapter.remove(peerId);
 
@@ -69,7 +73,7 @@ private static final String TAG = "DemoActivity";
 
     protected class PeerListChanged implements Delegate<List<IPeer>> {
         public void invoke(final List<IPeer> newPeerList) {
-            handler.post(new Runnable() {
+            _uiHandler.post(new Runnable() {
                 public void run() {
                     _peerAdapter.clear();
                     _fileAdapter.clear();
@@ -133,7 +137,7 @@ private static final String TAG = "DemoActivity";
                 _progressDialog.show();
                  */
 
-                _fooshare.startDownloadService(f, new DownloadReceiver(new Handler()));
+                _fooshare.startDownloadService(f);
             }
         });
         
@@ -147,8 +151,8 @@ private static final String TAG = "DemoActivity";
 
     ProgressDialog _progressDialog;
 
-    private class DownloadReceiver extends ResultReceiver {
-        public DownloadReceiver(Handler handler) {
+    private class DemoDownloadReceiver extends ResultReceiver {
+        public DemoDownloadReceiver(Handler handler) {
             super(handler);
         }
 
@@ -156,11 +160,12 @@ private static final String TAG = "DemoActivity";
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
 
+            /*
             long downloaded = resultData.getLong(DownloadService.PROGRESS_DOWN);
             long total = resultData.getLong(DownloadService.PROGRESS_LEFT);
             _progressDialog.setMax((int) total);
             _progressDialog.setProgress((int) downloaded);
-
+             */
 
             /*
             if (downloaded == total) {

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.fooshare.R;
+import org.fooshare.R.id;
+import org.fooshare.R.layout;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -85,7 +89,7 @@ public class RegistrationFragment extends Fragment {
 	private static final int REQUEST_CODE_PICK_DIR = 101;
 	private static final int REQUEST_CODE_PICK_UPLOAD_DIR = 102;
 	private String mInitalPath = "/";
-	
+
 	protected FooshareApplication mFooshare;
 
 	//list items for upload directories
@@ -94,15 +98,14 @@ public class RegistrationFragment extends Fragment {
 	UDirListEntryAdapter adapter;
 	
 	private AlertDialog.Builder builder;
-	
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        
     	Log.d(TAG, "onCreateView is running");
 
         View view = inflater.inflate(R.layout.registration_fragment, container, false);
-        
-        
+
+
         Activity curr_activity = getActivity();
         builder = new AlertDialog.Builder(curr_activity);
 
@@ -127,7 +130,7 @@ public class RegistrationFragment extends Fragment {
     	}
         return view;
     }
-    
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
@@ -137,29 +140,29 @@ public class RegistrationFragment extends Fragment {
         lv_sharedDir.setAdapter(adapter);
         lv_sharedDir.setClickable(true);
 		lv_sharedDir.setOnItemLongClickListener(OnUDirItemClickListener);
-		
-		
+
+
 		Button nickNameOK = (Button)getActivity().findViewById(R.id.nick_ok);
-		nickNameOK.setOnClickListener(OnNicknameOKListener);		
-		
+		nickNameOK.setOnClickListener(OnNicknameOKListener);
+
 		EditText downloadsFolder = (EditText)getActivity().findViewById(R.id.downloads_folder_field);
 		downloadsFolder.setOnClickListener(OnDownloadFolderOKListener);
-		
+
 		Button addUDir = (Button)getActivity().findViewById(R.id.button_download);
 		addUDir.setOnClickListener(OnAddUDirOKListener);
     }
-    
+
     OnClickListener OnAddUDirOKListener = new OnClickListener(){
 
 		public void onClick(View arg0) {
 			Log.d(TAG, "OnAddUDirOKListener is running");
-			
+
 	    	Intent fileExploreIntent = new Intent(FileBrowserActivity.INTENT_ACTION_SELECT_DIR,
 					null, getActivity(), FileBrowserActivity.class );
 			fileExploreIntent.putExtra(FileBrowserActivity.startDirectoryParameter, mInitalPath);
 			startActivityForResult( fileExploreIntent, REQUEST_CODE_PICK_UPLOAD_DIR );
 		}};
-    
+
     OnClickListener OnDownloadFolderOKListener = new OnClickListener(){
 
 		public void onClick(View arg0) {
@@ -171,20 +174,19 @@ public class RegistrationFragment extends Fragment {
 	    	fileExploreIntent.putExtra(FileBrowserActivity.startDirectoryParameter, mInitalPath);
 	     	startActivityForResult( fileExploreIntent, REQUEST_CODE_PICK_DIR );
 		}};
-    
+
     OnClickListener OnNicknameOKListener = new OnClickListener(){
 
 		public void onClick(View arg0) {
 			Log.d(TAG, "OnNicknameOKListener is running");
-			
-			EditText editText = (EditText)getActivity().findViewById(R.id.name_field);
+			EditText editText = (EditText) getActivity().findViewById(R.id.name_field);
+
 			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
 			Log.d(TAG, editText.getText().toString());
 
 	        String newNickname = editText.getText().toString();
 	        mFooshare.storage().setNickname(newNickname);
-			
 		}};
     
 	OnClickListener OnSharedFolderEntryListener = new OnClickListener(){
@@ -213,10 +215,9 @@ public class RegistrationFragment extends Fragment {
 		}
 	};
 	
-		
 	OnItemLongClickListener OnUDirItemClickListener = new OnItemLongClickListener() {
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-			
+
 			ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
 		    final Object o = lv_sharedDir.getItemAtPosition(position);
 
@@ -262,9 +263,7 @@ public class RegistrationFragment extends Fragment {
         }
 
 		if (requestCode == REQUEST_CODE_PICK_UPLOAD_DIR) {
-			
-			if (adapter.getPosition(newDir) == -1) { //directory not in list	
-				
+			if (adapter.getPosition(newDir) == -1) { //directory not in list
 				adapter.add(newDir);
 				adapter.notifyDataSetChanged();
 				//update upload_dir in storage

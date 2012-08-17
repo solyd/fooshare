@@ -1,5 +1,9 @@
 package org.fooshare;
 
+import org.fooshare.R;
+import org.fooshare.R.id;
+import org.fooshare.R.layout;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
