@@ -183,8 +183,6 @@ public class RegistrationFragment extends Fragment {
 
 	        String newNickname = editText.getText().toString();
 	        mFooshare.storage().setNickname(newNickname);
-
-
 		}};
 
 	OnClickListener OnSharedFolderEntryListener = new OnClickListener(){
