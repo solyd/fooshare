@@ -4,7 +4,8 @@
     android:orientation="horizontal" 
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_margin="10dip">
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
     
       <ImageButton
           	 android:id="@+id/cancelButton"
@@ -27,18 +28,18 @@
    		  <TextView android:id="@+id/fileName"
      		  	android:layout_width="260dip"
       			android:layout_height="20dip"
-      		  	android:textSize="13dip"
+      		  	android:textSize="14dp"
       		  	android:textColor="#f5f5f5"/>  
       	  <ProgressBar
       	      	 android:id="@+id/progressbar"
        			 android:layout_width="260dip"
-         		 android:layout_height="4dip"
+         		 android:layout_height="5dp"
          		 style="@android:style/Widget.ProgressBar.Horizontal"
          		/>      	        		  	
-   		   <TextView android:id="@+id/eta"
+   		   <TextView android:id="@+id/status"
      		  	android:layout_width="wrap_content"
       			android:layout_height="wrap_content"
-      		  	android:textSize="11dp"
+      		  	android:textSize="12dp"
       		  	android:textColor="#f5f5f5"/> 
       		  	   		  
       </LinearLayout>
