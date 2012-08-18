@@ -6,29 +6,38 @@ import org.fooshare.R.layout;
 import org.fooshare.R.string;
 import org.fooshare.storage.IStorage.RegistrationItem;
 
+import android.app.AlertDialog;
 import android.app.TabActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
 
 public class MainTabActivity extends TabActivity {
 
 	protected FooshareApplication _fooshare;
 
 	// TODO remove
-	public final String TAB_DEMO      = "Demo";
+	//public final String TAB_DEMO      = "Demo";
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String TAB_SEARCH    = getResources().getString(R.string.SEARCH_TAB_TAG);
-        String TAB_DOWNLOADS = getResources().getString(R.string.DOWNLOADS_TAB_TAG);
-        String TAB_PEERS     = getResources().getString(R.string.PEERS_TAB_TAG);
-        String TAB_SETTINGS  = getResources().getString(R.string.SETTINGS_TAB_TAG);
+        final String TAB_SEARCH    = getResources().getString(R.string.SEARCH_TAB_TAG);
+        final String TAB_DOWNLOADS = getResources().getString(R.string.DOWNLOADS_TAB_TAG);
+        final String TAB_PEERS     = getResources().getString(R.string.PEERS_TAB_TAG);
+        final String TAB_SETTINGS  = getResources().getString(R.string.SETTINGS_TAB_TAG);
         _fooshare = (FooshareApplication) getApplication();
+        
+        
+        _fooshare.mMainTabActivity = this;
+        
 
         setContentView(R.layout.main);
 
@@ -65,7 +74,7 @@ public class MainTabActivity extends TabActivity {
                 .setIndicator(TAB_SETTINGS,res.getDrawable(android.R.drawable.ic_menu_preferences))
                 .setContent(intent);
         tabHost.addTab(spec);
-
+        
         intent = new Intent().setClass(this, PeersActivity.class);
         spec = tabHost.newTabSpec(TAB_PEERS)
                 //.setIndicator(TAB_PEERS, res.getDrawable(R.drawable.ic_tab_settings))
@@ -78,7 +87,28 @@ public class MainTabActivity extends TabActivity {
 //                .setIndicator("Demo", res.getDrawable(R.drawable.ic_launcher))
 //                .setContent(intent);
 //        tabHost.addTab(spec);
+        
+        
 
-        tabHost.setCurrentTabByTag(TAB_PEERS);
+		getTabHost().setOnTabChangedListener(new OnTabChangeListener() {
+			
+			public void onTabChanged(String tabId) {
+				if (!tabId.equals(TAB_SETTINGS)) {
+					
+					RegistrationItem missingItem = _fooshare.storage().isRegistrationNeeded();
+					if (missingItem != null) {
+						AlertDialog.Builder popupBuilder = new AlertDialog.Builder(getCurrentActivity());
+						popupBuilder.setMessage(missingItem.toString());
+						popupBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					           public void onClick(DialogInterface dialog, int id) { }
+					       });
+						popupBuilder.show();
+						getTabHost().setCurrentTabByTag(TAB_SETTINGS);
+					} 	
+				}
+			}
+		});
+
+
     }
 }

@@ -77,24 +77,23 @@ public class Storage implements IStorage  {
 			    mSharedDirectories.add(d);
 		}
 		//-------------------------------------------------------------
-
 	}
 
     public synchronized RegistrationItem isRegistrationNeeded() {
 
-		if (mPrefSettings.getString(UID_NAME, NO_VALUE) == NO_VALUE) {
+		if (mPrefSettings.getString(UID_NAME, NO_VALUE).equals(NO_VALUE)) {
 			return RegistrationItem.UID;
 		}
 
-		if (mPrefSettings.getString(NICKNAME_NAME, NO_VALUE) == NO_VALUE) {
+		if (mPrefSettings.getString(NICKNAME_NAME, NO_VALUE).equals(NO_VALUE)) {
 			return RegistrationItem.NAME;
 		}
 
-		if (mPrefSettings.getString(DOWNLOAD_DIR_NAME, NO_VALUE) == NO_VALUE) {
+		if (mPrefSettings.getString(DOWNLOAD_DIR_NAME, NO_VALUE).equals(NO_VALUE)) {
 			return RegistrationItem.DOWNLOAD_DIR;
 		}
 
-		if (mPrefSettings.getString(SHARED_DIR_NAME, NO_VALUE) == NO_VALUE) {
+		if (mPrefSettings.getString(SHARED_DIR_NAME, NO_VALUE).equals(NO_VALUE)) {
 			return RegistrationItem.SHARED_DIRS;
 		}
 

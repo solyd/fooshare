@@ -29,6 +29,11 @@ import android.content.Intent;
 import android.util.Log;
 
 public class FooshareApplication extends Application {
+	
+	public MainTabActivity mMainTabActivity = null;
+	
+	
+	
     private static final String TAG = "FooshareApplication";
 
     public static final String APPNAME = "fooshare";
