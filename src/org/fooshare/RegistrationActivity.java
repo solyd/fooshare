@@ -43,10 +43,8 @@ public class RegistrationActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-		TabHost tabhost = ((TabHost) getParent().findViewById(android.R.id.tabhost));
-
-		ViewParent vp = tabhost.getParent();
-		System.out.println(vp.toString());
+		mFooshare.mMainTabActivity.finish();
+		finish();
     }
 
 	public void registrationDoneClicked(View view) {

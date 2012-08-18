@@ -1,5 +1,6 @@
 package org.fooshare;
 
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -54,7 +55,6 @@ public class SettingsActivity extends FragmentActivity {
             ft.commit();
         }
 
-
         mBroadcastReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -80,6 +80,22 @@ public class SettingsActivity extends FragmentActivity {
 
 		registerReceiver(mBroadcastReceiver, intentFilter);
     }
+
+//    public void onPause() {
+//
+//    	RegistrationItem missingItem = mFooshare.storage().isRegistrationNeeded();
+//		if (missingItem != null) {
+//			AlertDialog.Builder popupBuilder = new AlertDialog.Builder(this);
+//			popupBuilder.setMessage(missingItem.toString());
+//			popupBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//		           public void onClick(DialogInterface dialog, int id) { }
+//		       });
+//			popupBuilder.show();
+//
+//		} else {
+//			super.onPause();
+//		}
+//    }
 
 
     public void SharedFolderEntryRemove_OnClick(View view) {
