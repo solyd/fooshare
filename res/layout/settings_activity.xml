@@ -2,50 +2,56 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">  
-   	  
-	<LinearLayout 
-	    android:id="@+id/SSIDLayout"
-	    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <LinearLayout 
+        android:id="@+id/OptionsLayout"
+        xmlns:android="http://schemas.android.com/apk/res/android"
   		android:layout_width="fill_parent"
    		android:layout_height="wrap_content"
    		android:layout_alignParentTop="true"
-		android:orientation="horizontal">  
-     	
-     	<TextView 
-     		android:id="@+id/wifi_name_field"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="WiFi: " />
+		android:orientation="vertical">
 		
-		<TextView
-			android:id="@+id/SSID_field"
-			android:textColor="@android:color/white"
-			android:layout_width="wrap_content"
+	    <LinearLayout 
+		    android:id="@+id/SSIDLayout"
+		    xmlns:android="http://schemas.android.com/apk/res/android"
+	  		android:layout_width="fill_parent"
+	   		android:layout_height="wrap_content"
+	   		android:layout_alignParentTop="true"
+			android:orientation="horizontal">  
+	     	
+	     	<TextView 
+	     		android:id="@+id/wifi_name_field"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:text="WiFi: " />
+			
+			<TextView
+				android:id="@+id/SSID_field"
+				android:textColor="@android:color/white"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/WiFi_not_connected" />
+			
+	     	
+		</LinearLayout>
+			
+		<CheckBox 
+		    android:id="@+id/settings_bgtransfer_checkbox"
+		    android:text="@string/BgTransfers"
+		    android:textSize="15dp"
+		    android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:text="@string/WiFi_not_connected" />
-     	
-	</LinearLayout>
-    	    
-	<Button 
-	    android:text="Quit fooshare"
-   		android:id="@+id/quit_fooshare"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content" 
-    	android:layout_alignParentBottom="true"
-    	android:layout_marginBottom="5dp"
-    	android:layout_centerInParent="true" 
-    	android:background="@drawable/button_shape"
-        android:textColor="@drawable/button_selector"
-		android:padding="2dp"
-        android:textSize="15dp"  	
-    	android:layout_gravity="center"
-     	android:onClick="onQuitFooshareClick"/>
-	    
+	    />
+    
+        
+    </LinearLayout>
+    	  
+		   
     <FrameLayout
         android:id="@+id/fragment_reg_content"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/SSIDLayout" 
-        android:layout_above="@id/quit_fooshare"/>
+        android:layout_below="@id/OptionsLayout" 
+        />
 
 </RelativeLayout>

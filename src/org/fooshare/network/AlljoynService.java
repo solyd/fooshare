@@ -194,6 +194,7 @@ public class AlljoynService extends Service {
                                             Log.i(TAG, String.format("sessionLost, id: %d", sessionId));
                                             _fooshare.removePeer(new SessionIdPredicate(sessionId));
                                         }
+
                                     },
                                     serviceName,
                                     PEER_PORT,

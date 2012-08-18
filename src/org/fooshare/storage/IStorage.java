@@ -56,6 +56,9 @@ public interface IStorage {
 
 	public void deleteFile(String fileFullPath);
 
+	public boolean savePrefString(String key, String value);
+	public String getPrefString(String key);
+
 	/**
 	 * Create and return input stream to read a file from local storage.
 	 * The file must be in one of the shared directories.
@@ -73,4 +76,5 @@ public interface IStorage {
 	 */
 	public BufferedOutputStream getStream4Download(String fileName);
 
+	public String filesHash();
 }

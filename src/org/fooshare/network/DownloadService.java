@@ -8,6 +8,7 @@ import org.fooshare.AlljoynPeer;
 import org.fooshare.FileItem;
 import org.fooshare.FooshareApplication;
 import org.fooshare.IPeer;
+import org.fooshare.network.Download.DownloadStatus;
 import org.fooshare.network.IPeerService.FileServerInfo;
 import org.fooshare.predicates.PeerIdPredicate;
 
@@ -49,6 +50,9 @@ public class DownloadService extends IntentService {
         }
         catch (BusException e) {
             Log.i(TAG, String.format("Couldn't get host of %s", ownerId));
+            Download failed = new Download(fooshare, null, 0, fileItem, null);
+            failed.setStatus(DownloadStatus.FAILED);
+            fooshare.addDownload(failed);
             return;
         }
 
@@ -56,12 +60,13 @@ public class DownloadService extends IntentService {
         int remotePort = remoteFileServerInfo.port;
 
         // Write received bytes to this
-        File downloadedFile = new File(fileName);
-//        int i = 0;
-//        while (downloadedFile.exists()) {
-//            String currFileName = indexFileName(fileName, i);
-//            downloadedFile = new File(currFileName);
-//        }
+        File originalFile = new File(fileName);
+        File downloadedFile = originalFile;
+        int i = 1;
+        while (downloadedFile.exists()) {
+            downloadedFile = getNextIndexedFile(originalFile, i++);
+        }
+
         BufferedOutputStream dlFileBuffed = fooshare.storage().getStream4Download(downloadedFile.getName());
         if (dlFileBuffed == null) {
             Log.e(TAG, "Couldn't open OutputStream for writing file " + fileName);
@@ -83,7 +88,14 @@ public class DownloadService extends IntentService {
      * @param index
      * @return
      */
-    private String indexFileName(String fileName, int index) {
-        return null;
+    private File getNextIndexedFile(File file, int i) {
+
+        String name = file.getName();
+        int lastDotIndex = name.contains(".") ? name.lastIndexOf('.') : name.length();
+        String dstName =
+                name.substring(0, lastDotIndex) +
+                String.format("(%d)", i) +
+                name.substring(lastDotIndex);
+        return new File(file.getParent(), dstName);
     }
 }

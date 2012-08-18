@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.fooshare.R;
+import org.alljoyn.bus.BusException;
+import org.fooshare.predicates.Predicate;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,7 +25,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -281,6 +281,27 @@ public class RegistrationFragment extends Fragment {
 	}
 
 	private void UpdateSharedDir()	{
+	    Thread updatePeers = new Thread(new Runnable() {
+	        public void run() {
+	            List<IPeer> peers = mFooshare.getPeers(new Predicate<IPeer>() {
+	                public boolean pred(IPeer ele) {
+	                    return true;
+	                }
+	            });
+
+	            for (IPeer p : peers) {
+	                try {
+	                    ((AlljoynPeer) p).proxyObject().notifyFilesChanged(mFooshare.myId());
+	                }
+	                catch (BusException e) {
+	                    Log.e(TAG, Log.getStackTraceString(e));
+	                }
+	            }
+	        }
+	    });
+	    updatePeers.setDaemon(true);
+	    updatePeers.start();
+
      	String[] arr_UDirs = new String[adapter.getCount()];
      	for (int i=0; i < adapter.getCount(); i++) {
      		arr_UDirs[i] = adapter.getItem(i);

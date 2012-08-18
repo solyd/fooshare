@@ -2,6 +2,7 @@ package org.fooshare;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import org.alljoyn.bus.BusException;
 import org.fooshare.network.IPeerService;
@@ -16,6 +17,8 @@ public class AlljoynPeer implements IPeer {
     private String               _name;
     private int                  _sessionId;
     private IPeerService         _remotePeerProxy;
+    private Collection<FileItem> _sharedFiles = new ArrayList<FileItem>();
+    private Object               _filesLock = new Object();
 
     public AlljoynPeer(String id, int sessionId, IPeerService remotePeerProxy) {
         _id = id;
@@ -24,6 +27,9 @@ public class AlljoynPeer implements IPeer {
 
         try {
             _name = _remotePeerProxy.peerName();
+            AlljoynFileItem[] peerFiles = _remotePeerProxy.peerFiles();
+            for (AlljoynFileItem pf : peerFiles)
+                _sharedFiles.add(new FileItem(pf.fullName, pf.sizeInBytes, pf.ownerId));
         }
         catch (BusException ignore) {
             Log.e(TAG, Log.getStackTraceString(ignore));
@@ -39,17 +45,23 @@ public class AlljoynPeer implements IPeer {
     }
 
     public Collection<FileItem> files() {
-        Collection<FileItem> sharedFiles = new ArrayList<FileItem>();
-        try {
-            AlljoynFileItem[] peerFiles = _remotePeerProxy.peerFiles();
-            for (AlljoynFileItem pf : peerFiles)
-                sharedFiles.add(new FileItem(pf.fullName, pf.sizeInBytes, pf.ownerId));
+        synchronized (_filesLock) {
+            return _sharedFiles;
         }
-        catch (BusException e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-        }
+    }
 
-        return sharedFiles;
+    public void updateFiles() {
+        synchronized (_filesLock) {
+            _sharedFiles.clear();
+            try {
+                AlljoynFileItem[] peerFiles = _remotePeerProxy.peerFiles();
+                for (AlljoynFileItem pf : peerFiles)
+                    _sharedFiles.add(new FileItem(pf.fullName, pf.sizeInBytes, pf.ownerId));
+            }
+            catch (BusException e) {
+                Log.e(TAG, Log.getStackTraceString(e));
+            }
+        }
     }
 
     public int sessionId() {

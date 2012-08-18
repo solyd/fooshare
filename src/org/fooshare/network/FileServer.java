@@ -127,6 +127,18 @@ public class FileServer {
             t.start();
         }
 
+
+        public String getAdjustedSize(){
+            if (_fileLen<1024)
+                return String.valueOf(_fileLen)+"b";
+            else if ((_fileLen>=1024) && (_fileLen<1048576))
+                return String.valueOf(_fileLen/1024)+"KB";
+            else if ((_fileLen>=1048576) && (_fileLen<1073741824))
+                return String.valueOf(_fileLen/1048576)+"MB";
+            else return String.valueOf(_fileLen/1073741824)+"GB";
+        }
+
+
         public String getFileName() {
             if (_requestedFile == null)
                 return null;

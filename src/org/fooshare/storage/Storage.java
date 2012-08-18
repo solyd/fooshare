@@ -22,19 +22,22 @@ import android.util.Log;
 public class Storage implements IStorage  {
     private static final String TAG = "Storage";
 
-	protected static final String PREFS_NAME        = "PrefsFile";
-    protected static final String SHARED_DIR_NAME   = "sharedDirectories";
-    protected static final String SHARED_DIR_SEP    = ";";
-    protected static final String DOWNLOAD_DIR_NAME = "downloadDirectory";
-    protected static final String UID_NAME          = "uid";
-    protected static final String NICKNAME_NAME     = "nickname";
-    protected static final String NO_VALUE          = "";
+	protected static final String PREFS_NAME           = "PrefsFile";
+    protected static final String SHARED_DIR_NAME      = "sharedDirectories";
+    protected static final String SHARED_DIR_SEP       = ";";
+    protected static final String DOWNLOAD_DIR_NAME    = "downloadDirectory";
+    protected static final String UID_NAME             = "uid";
+    protected static final String NICKNAME_NAME        = "nickname";
+    protected static final String NO_VALUE             = "";
+    protected static final String FILES_HASH           = "FilesHash";
+
     protected static final int BUFFER_SIZE          = 4096; // bytes
 
     private Set<String> mSharedDirectories = new HashSet<String>();
 	private volatile String mDownloadDirectory;
 	private volatile String mUid = "";
 	private volatile String mNickname = "";
+	private volatile String mFilesHash = "";
 
 	private Context mContext;
 
@@ -49,12 +52,15 @@ public class Storage implements IStorage  {
 		// Restore preferences
 		mPrefSettings = mContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);   //MODE_WORLD_READABLE
 
+		mFilesHash = mPrefSettings.getString(FILES_HASH, NO_VALUE);
+
 		// restore uid
 		mUid = mPrefSettings.getString(UID_NAME, NO_VALUE);
-		if (mUid == NO_VALUE) {
+		if (mUid.equals(NO_VALUE)) {
 			mUid= "p" + UUID.randomUUID().toString().replace("-", "");
 			setUID(mUid);
 		}
+
 		//-------------------------------------------------------------
 
 		// restore nickname
@@ -77,24 +83,23 @@ public class Storage implements IStorage  {
 			    mSharedDirectories.add(d);
 		}
 		//-------------------------------------------------------------
-
 	}
 
     public synchronized RegistrationItem isRegistrationNeeded() {
 
-		if (mPrefSettings.getString(UID_NAME, NO_VALUE) == NO_VALUE) {
+		if (mPrefSettings.getString(UID_NAME, NO_VALUE).equals(NO_VALUE)) {
 			return RegistrationItem.UID;
 		}
 
-		if (mPrefSettings.getString(NICKNAME_NAME, NO_VALUE) == NO_VALUE) {
+		if (mPrefSettings.getString(NICKNAME_NAME, NO_VALUE).equals(NO_VALUE)) {
 			return RegistrationItem.NAME;
 		}
 
-		if (mPrefSettings.getString(DOWNLOAD_DIR_NAME, NO_VALUE) == NO_VALUE) {
+		if (mPrefSettings.getString(DOWNLOAD_DIR_NAME, NO_VALUE).equals(NO_VALUE)) {
 			return RegistrationItem.DOWNLOAD_DIR;
 		}
 
-		if (mPrefSettings.getString(SHARED_DIR_NAME, NO_VALUE) == NO_VALUE) {
+		if (mPrefSettings.getString(SHARED_DIR_NAME, NO_VALUE).equals(NO_VALUE)) {
 			return RegistrationItem.SHARED_DIRS;
 		}
 
@@ -140,6 +145,9 @@ public class Storage implements IStorage  {
 			    sb.append(_sharedDir[i]).append(SHARED_DIR_SEP);
 		}
 
+		mFilesHash = UUID.randomUUID().toString();
+		savePrefString(FILES_HASH, mFilesHash);
+
 		return savePrefString(SHARED_DIR_NAME, sb.toString());
 	}
 
@@ -149,8 +157,7 @@ public class Storage implements IStorage  {
 	 * @param value - field value
 	 * @return true if preference saved
 	 */
-	protected synchronized boolean savePrefString(String key, String value) {
-
+	public synchronized boolean savePrefString(String key, String value) {
 	    SharedPreferences.Editor editor = mPrefSettings.edit();
 
 	    editor.putString(key, value);
@@ -160,6 +167,10 @@ public class Storage implements IStorage  {
 	    isSaved = editor.commit();
 
 	    return isSaved;
+	}
+
+	public synchronized String getPrefString(String key) {
+	    return mPrefSettings.getString(key, null);
 	}
 
 
@@ -248,5 +259,9 @@ public class Storage implements IStorage  {
 		}
 
 		return false;
+	}
+
+	public String filesHash() {
+	    return mFilesHash;
 	}
 }
