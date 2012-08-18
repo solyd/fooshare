@@ -96,8 +96,8 @@ public class Download implements Runnable {
     }
 ////////////////////////////////////Alex's Changes only for testing
     public int getPercentageProgress() {
-        //return (int) (_progressInBytes * 100.0 / _fileItem.sizeInBytes());
-    	return 200;
+        return (int) (_progressInBytes * 100.0 / _fileItem.sizeInBytes());
+    	
     }
 
     public void setUpdateReceiver(ResultReceiver updateReceiver) {

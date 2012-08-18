@@ -11,7 +11,13 @@
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content" 
     	android:layout_alignParentBottom="true"   	
-     	android:onClick="registrationDoneClicked"/> 
+     	android:onClick="registrationDoneClicked"
+     	android:textSize="15sp"
+        android:paddingLeft="2dp"
+       	android:paddingRight="2dp"
+       	android:textColor="@drawable/button_selector"
+        android:background="@drawable/button_shape"     	
+     	/> 
      	
     <FrameLayout
         android:id="@+id/fragment_reg_content"

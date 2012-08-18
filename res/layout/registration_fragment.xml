@@ -22,8 +22,7 @@
 		android:paddingTop="5dp"
 		/>
 	
-	<LinearLayout 
-	    xmlns:android="http://schemas.android.com/apk/res/android"
+	<RelativeLayout 
   		android:layout_width="fill_parent"
    		android:layout_height="wrap_content"
 		android:orientation="horizontal"
@@ -33,17 +32,29 @@
      	<EditText 
      		android:id="@+id/name_field"
 			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
+			android:layout_width="270dp"
 			android:inputType="text"
-			android:layout_weight="1"/>
+			android:layout_alignParentLeft="true"
+			android:layout_centerVertical="true"
+			/>
 		
 		<Button 
 		    android:text="OK"
    			android:id="@+id/nick_ok"
-    		android:layout_width="wrap_content"
-    		android:layout_height="wrap_content" />
+    		android:layout_width="fill_parent"
+    		android:layout_height="25dp"
+    		android:layout_alignParentRight="true"
+    		android:layout_toRightOf="@+id/name_field"
+    		android:layout_marginLeft="2dp"
+    		android:layout_marginRight="2dp"
+    		android:layout_centerVertical="true"
+    		android:background="@drawable/button_shape"
+      		android:textColor="@drawable/button_selector"
+      	  	android:paddingLeft="2dp"
+        	android:paddingRight="2dp"
+        	android:textSize="12dp" />
      	
-	</LinearLayout>
+	</RelativeLayout>
 	
 
    		
@@ -65,7 +76,7 @@
 	</EditText>		
 		
 	<LinearLayout 
-	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    
   		android:layout_width="fill_parent"
   		android:layout_height="0dip"
   		android:orientation="vertical"
@@ -73,20 +84,27 @@
 	    
 	    <LinearLayout
         	android:layout_width="fill_parent"
-        	android:layout_height="wrap_content" >
+        	android:layout_height="30dp" >
 
 		    <TextView 
 	  			android:id="@+id/chooseUFolder"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
+				android:layout_width="270dp"
+				android:layout_height="match_parent"
+				
 				android:text = "Select shared folder:"/>
 	
 	        <Button
 	            android:id="@+id/button_download"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="Add..." />
+	            android:layout_width="fill_parent"
+	            android:layout_height="25dp"
+	            android:layout_marginLeft="2dp"
+    			android:layout_marginRight="2dp"
+	            android:text="Add..."
+	            android:background="@drawable/button_shape"
+       			android:textColor="@drawable/button_selector"
+        		android:paddingLeft="2dp"
+        		android:paddingRight="2dp"
+        		android:textSize="12dp" />
     	</LinearLayout>
 	    
   		<ListView

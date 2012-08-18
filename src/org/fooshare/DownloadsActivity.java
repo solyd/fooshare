@@ -97,7 +97,7 @@ public class DownloadsActivity extends Activity {
                 holder = new DownloadEntryHolder();
                 //holder.icon = (ImageView) row.findViewById(R.id.image);
                 holder.fileName = (TextView) row.findViewById(R.id.fileName);
-                holder.eta = (TextView) row.findViewById(R.id.eta);
+                holder.status = (TextView) row.findViewById(R.id.status);
                 holder.percentage = (TextView) row.findViewById(R.id.percentage);
                 holder.progressBar = (ProgressBar) row.findViewById(R.id.progressbar);
 
@@ -113,7 +113,7 @@ public class DownloadsActivity extends Activity {
 
             //holder.icon.setImageResource(determineIconId(fitem));
             holder.fileName.setText(fitem.name());
-            holder.eta.setText("ETA_TODO");
+            holder.status.setText(dlitem.status().toString());
             holder.percentage.setText(String.format("%d%%", progressInPercent));
             holder.progressBar.setMax(100);
             holder.progressBar.setProgress(progressInPercent);
@@ -125,7 +125,7 @@ public class DownloadsActivity extends Activity {
         class DownloadEntryHolder {
             ImageButton imageButton;
             TextView fileName;
-            TextView eta;
+            TextView status;
             TextView percentage;
             ProgressBar progressBar;
         }
@@ -157,6 +157,7 @@ public class DownloadsActivity extends Activity {
                 //holder.icon = (ImageView) row.findViewById(R.id.image);
                 holder.fileName = (TextView) row.findViewById(R.id.fileName);
                 holder.percentage = (TextView) row.findViewById(R.id.percentage);
+                holder.status = (TextView) row.findViewById(R.id.status);
                 holder.progressBar = (ProgressBar) row.findViewById(R.id.progressbar);
 
                 row.setTag(holder);
@@ -171,6 +172,7 @@ public class DownloadsActivity extends Activity {
 
             //holder.icon.setImageResource(determineIconId(fitem));
             holder.fileName.setText(filename);
+            holder.status.setText(item.toString());
             holder.percentage.setText(String.format("%d%%", progressInPercent));
             holder.progressBar.setMax(100);
             holder.progressBar.setProgress(progressInPercent);
@@ -181,6 +183,7 @@ public class DownloadsActivity extends Activity {
 
         class UploadEntryHolder {
             TextView fileName;
+            TextView status;
             TextView percentage;
             ProgressBar progressBar;
         }
@@ -226,8 +229,7 @@ public class DownloadsActivity extends Activity {
 
         _fooshare.onDownloadsListChanged.subscribe(new DownloadListChanged());
         _fooshare.onUploadsListChanged.subscribe(new UploadListChanged());
-        
-        
+
     }
 
     @Override
@@ -243,8 +245,7 @@ public class DownloadsActivity extends Activity {
         for (Download d : _downloadsList)
             d.setUpdateReceiver(_downloadUpdateReceiver);
         
-        // TODO remove
-        _downloadsList.add(new Download(_fooshare, "", 0, new FileItem("/tmp/song.mp3",4096, "p222" ), null));
+
 
         _downloadsListAdapter = new DownloadItemAdapter(this, R.layout.list_downloads_entry, _downloadsList);
         _downloadsListView.setAdapter(_downloadsListAdapter);
@@ -279,6 +280,17 @@ public class DownloadsActivity extends Activity {
         case CANCELED:
         case FAILED:
             _fooshare.removeDownload(dlclicked);
+        }
+    }
+
+    public void onUploadEntryClick(View view) {
+        int position = _uploadsListView.getPositionForView((View) view.getParent());
+        Upload upclicked = _uploadsListAdapter.getItem(position);
+        switch (upclicked.status()) {
+        case FINISHED:
+        case CANCELED:
+        case FAILED:
+            _fooshare.removeUpload(upclicked);
         }
     }
 

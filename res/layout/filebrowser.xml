@@ -16,14 +16,25 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableLeft="@drawable/dir_up"
-            android:text="Up" />
+            android:text="Up"
+            android:layout_marginRight="3dp" 
+            android:paddingLeft="2dp"
+       		android:paddingRight="2dp"
+       		android:textColor="@drawable/button_selector"
+            android:background="@drawable/button_shape"
+            android:textSize="15dp"/>
 
         <Button
             android:id="@+id/selectCurrentDirectoryButton"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="Select current folder" />
+            android:text="Select current folder"
+            android:paddingLeft="2dp"
+       		android:paddingRight="2dp"
+       		android:textColor="@drawable/button_selector"
+            android:background="@drawable/button_shape"
+            android:textSize="15dp"/>
     </LinearLayout>
 
     <TextView

@@ -47,9 +47,9 @@
             android:layout_centerVertical="true"
             android:onClick="onSearchListClick"
             android:text="Search"
-            android:textColor="@drawable/button_selector"
             android:paddingLeft="2dp"
        		android:paddingRight="2dp"
+       		android:textColor="@drawable/button_selector"
             android:background="@drawable/button_shape"
             android:textSize="15sp" >
         </Button>
@@ -178,7 +178,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/downloadCheckedBtn"
         android:layout_below="@id/search_activity_title_list_layout"
-        android:maxLines="2" >
+         >
     </ListView>
 
 </RelativeLayout>
