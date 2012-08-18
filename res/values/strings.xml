@@ -14,5 +14,6 @@
 	<string name="DOWNLOADS_TAB_TAG">Downloads</string>
 	<string name="PEERS_TAB_TAG">Peers</string>
 	<string name="SETTINGS_TAB_TAG">Settings</string>
+	<string name="BgTransfers">Allow background downloads/uploads</string>
 	
 </resources>

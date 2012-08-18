@@ -81,4 +81,5 @@ public class MainTabActivity extends TabActivity {
 
         tabHost.setCurrentTabByTag(TAB_PEERS);
     }
+
 }

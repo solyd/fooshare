@@ -34,6 +34,8 @@ public class FooshareApplication extends Application {
     public static final String APPNAME = "fooshare";
     public static final String PROGRESS = "progress";
 
+    private static final String PREF_BGTRANSFER = "bgtransfer";
+
     // TODO remove this
     /*
     private static final String _id = "p" + UUID.randomUUID().toString().replace("-", "");
@@ -52,6 +54,25 @@ public class FooshareApplication extends Application {
     // Determines how many concurrent downloads/uploads are allowed
     private int    _uploadSlots = 10;
     private int    _downloadSlots = 10;
+
+    // Determines whether to kill all background services related to network activity.
+    // If this flag is false then all downloads, peer connectivity, uploads etc will be canceled
+    // once the user exits the application activity.
+    private boolean _backgroundTransfersAllowed = false;
+
+    public void setBackgroundTransfersAllowed(boolean flag) {
+        String strval;
+        if (flag)
+            strval = "true";
+        else
+            strval = "false";
+        _storage.savePrefString(PREF_BGTRANSFER, strval);
+        _backgroundTransfersAllowed = flag;
+    }
+
+    public boolean getBackgroundTransfersAllowed() {
+        return _backgroundTransfersAllowed;
+    }
 
     // This service facilitates all network related activities.
     private AlljoynService    _alljoynService;
@@ -76,6 +97,20 @@ public class FooshareApplication extends Application {
         Log.d(TAG, "onCreate()");
 
         _storage = new Storage(getApplicationContext());
+        String bgpref = _storage.getPrefString(PREF_BGTRANSFER);
+        // This is the first time the application is ever launched, or the setting
+        // was deleted from outside
+        if (bgpref == null) {
+            _backgroundTransfersAllowed = true;
+            _storage.savePrefString(PREF_BGTRANSFER, "true");
+        }
+        else {
+            if (bgpref.equals("true"))
+                _backgroundTransfersAllowed = true;
+            else
+                _backgroundTransfersAllowed = false;
+        }
+
         Log.i(TAG, "Generated id: " + _storage.getUID());
 
         //checkin();
@@ -353,6 +388,9 @@ public class FooshareApplication extends Application {
     }
 
     public void quit() {
+        if (_backgroundTransfersAllowed)
+            return;
+
         onPeerDiscovered.clear();
         onPeerLost.clear();
 

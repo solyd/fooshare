@@ -34,7 +34,6 @@ public class RegistrationActivity extends FragmentActivity {
         mRegFragment = (RegistrationFragment)fm.findFragmentById(R.id.fragment_reg_content);
 
         if (mRegFragment == null) {
-
             FragmentTransaction ft = fm.beginTransaction();
             mRegFragment = new RegistrationFragment();
             ft.add(R.id.fragment_reg_content, mRegFragment);

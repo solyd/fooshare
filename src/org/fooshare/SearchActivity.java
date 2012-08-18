@@ -35,7 +35,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 
-public class SearchActivity extends Activity { 
+public class SearchActivity extends Activity {
 
 	class SearchListEntryAdapter extends ArrayAdapter<FileItem> {
 		private static final String TAG = "SearchListEntryAdapter";
@@ -100,16 +100,16 @@ public class SearchActivity extends Activity {
 						String result = null;
 						IPeer peer = ((FooshareApplication) getApplication()).findPeer(fileEntry.ownerId());
 						if (peer == null) {
-							
+
 							result = String.format("The file owner has disconnected");
-							
+
 						} else {
-							
+
 							String peerNickname = peer.name();
 							if (peerNickname == null) {
 								peerNickname = fileEntry.ownerId();
 							}
-							result = String.format("File Info\n\nNAME:  %s\n\nSIZE:  %s\n\nOWNER:  %s", 
+							result = String.format("File Info\n\nNAME:  %s\n\nSIZE:  %s\n\nOWNER:  %s",
 									fileEntry.name(), fileEntry.getAdjustedSize(), peerNickname);
 						}
 
@@ -188,9 +188,18 @@ public class SearchActivity extends Activity {
 	}
 
 	@Override
+	protected void onDestroy() {
+	    super.onDestroy();
+
+	    _fooshare.quit();
+	}
+
+
+	@Override
 	protected void onResume() {
 		Log.d(TAG, "onResume");
 		super.onResume();
+		_fooshare.checkin();
 
 		IPeer selectedPeer = _fooshare.getSelectedPeer();
 		if (selectedPeer != null) {

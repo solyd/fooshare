@@ -216,8 +216,6 @@ public class DownloadsActivity extends Activity {
         for (Download d : _downloadsList)
             d.setUpdateReceiver(_downloadUpdateReceiver);
 
-
-
         _downloadsListAdapter = new DownloadItemAdapter(this, R.layout.list_downloads_entry, _downloadsList);
         _downloadsListView = (ListView) findViewById(R.id.list_downloads);
         _downloadsListView.setAdapter(_downloadsListAdapter);
@@ -241,6 +239,13 @@ public class DownloadsActivity extends Activity {
 
         _fooshare.onDownloadsListChanged.subscribe(new DownloadListChanged());
         _fooshare.onUploadsListChanged.subscribe(new UploadListChanged());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        _fooshare.quit();
     }
 
     @Override
