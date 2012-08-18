@@ -54,6 +54,7 @@
             android:layout_height="fill_parent"
             android:background="@android:color/black"
             android:id="@+id/content">
+        	
         	<ListView 
         	    android:stackFromBottom="false"
                 android:layout_gravity="top"

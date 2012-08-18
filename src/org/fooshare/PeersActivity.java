@@ -62,12 +62,6 @@ class PeerListEntryAdapter extends ArrayAdapter<IPeer> {
     List<IPeer> data;
     List<IPeer> checkedFiles;
 
-    // Context - reference of the activity in which we will use the Adapter
-    // class
-    // Resource id of the layout file we want to use for displaying each
-    // ListView item
-    // An array of FileItem class objects that will be used by the Adapter to
-    // display data.
     public PeerListEntryAdapter(Context context, int layoutResourceId, List<IPeer> arr) {
         super(context, layoutResourceId, arr);
         this.layoutResourceId = layoutResourceId;
@@ -181,7 +175,6 @@ public class PeersActivity extends Activity {
             }
         });
 
-
         sortPeerList();
         mPeersListAdapter = new PeerListEntryAdapter(this, R.layout.peer_list_entry, mPeerList);
         mPeersListView = (ListView) findViewById(R.id.peers_list);
@@ -200,67 +193,6 @@ public class PeersActivity extends Activity {
 
         _fooshare.onPeerListChanged.subscribe(new PeerListChanged());
     }
-
-//    // Runs when the user presses S. It filters the list according to what is
-//    // written in the search field.
-//    public void searchList(View btn) {
-//        String text = searchBar.getText().toString();
-//
-//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
-//
-//        SubStringPredicate subStringPredicate = new SubStringPredicate(text);
-//
-//        // Here should be a line calling to Alex's function that will return a
-//        // list with all files.
-//        // I will have to invoke getApplication and ask for the updated list
-//        // in getSharedFiles i will only pass the predicate
-//
-//        //filteredList = getSharedFiles(predicate, mList);
-//        filteredList = _fooshare.getAllSharedFiles(subStringPredicate);
-//
-//        sortFilteredList();
-//        mAdapter = new PeerListEntryAdapter(this, R.layout.search_list_entry, filteredList);
-//        mPeersListView.setAdapter(mAdapter);
-//    }
-
-    // My function for testing. I use it to create lists
-    public ArrayList<IPeer> creatNewList() {
-    	Collection<FileItem> _sharedFiles = new ArrayList<FileItem>();
-        _sharedFiles.add(new FileItem("/Tom.mp3", (long) 1025, "2345"));
-        _sharedFiles.add(new FileItem("//Barbara.mobi", (long) 1023, "67324"));
-        _sharedFiles.add(new FileItem("////Tobi.avi", (long) 848483932, "1234"));
-        _sharedFiles.add(new FileItem("/BaronCohen.avi", (long) 12434512, "16732"));
-        _sharedFiles.add(new FileItem("/Timor.mp3", (long) 56345523, "547"));
-        _sharedFiles.add(new FileItem("/London.apk", (long) 12, "2545"));
-        _sharedFiles.add(new FileItem("\\//Shmulic.avi", (long) 569062, "98736"));
-        _sharedFiles.add(new FileItem("\\//Barbican.avi", (long) 324523465, "5285"));
-        _sharedFiles.add(new FileItem("\\//Tom.mp4", (long) 356747, "1234"));
-        _sharedFiles.add(new FileItem("\\///Paris.mobi", (long) 234234, "1234"));
-        _sharedFiles.add(new FileItem("\\///Pipi.Kaki.avi", (long) 3429095, "264"));
-
-
-        ArrayList<IPeer> list = new ArrayList<IPeer>();
-        list.add(new DPeer("Abraham", new ArrayList<FileItem>()));
-        list.add(new DPeer("Binyamin", _sharedFiles));
-        list.add(new DPeer("Daniel", _sharedFiles));
-        list.add(new DPeer("Gidon", new ArrayList<FileItem>()));
-
-        return list;
-
-    }
-/*
-    // This function is only a simulation of what is going to be in the
-    // Application object.
-    // It will actually receive only the predicate.
-    public ArrayList<FileItem> getSharedFiles(Predicate<FileItem> predicate, ArrayList<FileItem> list) {
-        ArrayList<FileItem> newList = new ArrayList<FileItem>();
-        for (FileItem file : list) {
-            if (predicate.pred(file)) newList.add(file);
-        }
-        return newList;
-    }
-    */
 
     public void sortPeerList() {
         Log.d(TAG, "Sorting peers list");
@@ -308,10 +240,6 @@ public class PeersActivity extends Activity {
         mPeersListView.setAdapter(mPeersListAdapter);
     }
 
-//    public void downloadCheckedClicked(View view) {
-//        final List<FileItem> list = mAdapter.getCheckedFiles();
-//        //here i'm sending it to Alex
-//    }
 }
 
 class PeerComparatorByName implements Comparator<IPeer> {

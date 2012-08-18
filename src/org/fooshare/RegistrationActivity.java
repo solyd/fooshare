@@ -5,6 +5,7 @@ import org.fooshare.R.id;
 import org.fooshare.R.layout;
 import org.fooshare.storage.IStorage.RegistrationItem;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewParent;
+import android.widget.TabHost;
 
 public class RegistrationActivity extends FragmentActivity {
 
@@ -41,7 +44,10 @@ public class RegistrationActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
+		TabHost tabhost = ((TabHost) getParent().findViewById(android.R.id.tabhost));
 
+		ViewParent vp = tabhost.getParent();
+		System.out.println(vp.toString());
     }
 
 	public void registrationDoneClicked(View view) {
