@@ -42,7 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 // Import of resources file for file browser
-
+//Original color LTGRAY . Look for setBackgroundColor///////P.B
 public class FileBrowserActivity extends Activity {
     // Intent Action Constants
     public static final String INTENT_ACTION_SELECT_DIR  = "ua.com.vassiliev.androidfilebrowser.SELECT_DIRECTORY_ACTION";
@@ -213,7 +213,8 @@ public class FileBrowserActivity extends Activity {
 
     private void initializeFileListView() {
         ListView lView = (ListView) this.findViewById(R.id.fileListView);
-        lView.setBackgroundColor(Color.LTGRAY);
+        lView.setBackgroundColor(Color.BLACK);
+  
         LinearLayout.LayoutParams lParam = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,
                                                                          LayoutParams.FILL_PARENT);
         lParam.setMargins(15, 5, 15, 5);
@@ -365,6 +366,7 @@ public class FileBrowserActivity extends Activity {
                 textView.setCompoundDrawablesWithIntrinsicBounds(drawableID, 0, 0, 0);
 
                 textView.setEllipsize(null);
+                textView.setTextColor(Color.WHITE);/////////////////P.B
 
                 // add margin between image and text (support various screen
                 // densities)
@@ -373,7 +375,7 @@ public class FileBrowserActivity extends Activity {
                 // TODO: change next line for empty directory, so text will be
                 // centered
                 textView.setCompoundDrawablePadding(dp3);
-                textView.setBackgroundColor(Color.LTGRAY);
+                textView.setBackgroundColor(Color.BLACK);
                 return view;
             }// public View getView(int position, View convertView, ViewGroup
              // parent) {

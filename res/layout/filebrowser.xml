@@ -41,6 +41,7 @@
         android:id="@+id/currentDirectoryTextView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:textColor="#fffafa"
         android:text="Current folder: \n/THis/is/a/long/path/to/test/if/this/will/span/multiple/lines" />
 
     <ListView
