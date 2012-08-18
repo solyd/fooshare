@@ -73,4 +73,5 @@ public interface IStorage {
 	 */
 	public BufferedOutputStream getStream4Download(String fileName);
 
+	public String filesHash();
 }

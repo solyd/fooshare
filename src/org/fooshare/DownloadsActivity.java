@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SlidingDrawer;
+import android.widget.SlidingDrawer.OnDrawerCloseListener;
+import android.widget.SlidingDrawer.OnDrawerOpenListener;
 import android.widget.TextView;
 
 public class DownloadsActivity extends Activity {
@@ -96,10 +100,10 @@ public class DownloadsActivity extends Activity {
 
                 holder = new DownloadEntryHolder();
                 //holder.icon = (ImageView) row.findViewById(R.id.image);
-                holder.fileName = (TextView) row.findViewById(R.id.fileName);
-                holder.status = (TextView) row.findViewById(R.id.status);
-                holder.percentage = (TextView) row.findViewById(R.id.percentage);
-                holder.progressBar = (ProgressBar) row.findViewById(R.id.progressbar);
+                holder.fileName = (TextView) row.findViewById(R.id.downloads_fileName);
+                holder.status = (TextView) row.findViewById(R.id.downloads_status);
+                holder.percentage = (TextView) row.findViewById(R.id.downloads_percentage);
+                holder.progressBar = (ProgressBar) row.findViewById(R.id.downloads_progressbar);
                 holder.totalSize = (TextView) row.findViewById(R.id.downloads_activity_file_size);
 
                 row.setTag(holder);
@@ -157,12 +161,11 @@ public class DownloadsActivity extends Activity {
                 row = inflater.inflate(_layoutResourceId, parent, false);
 
                 holder = new UploadEntryHolder();
-                //holder.icon = (ImageView) row.findViewById(R.id.image);
-                holder.fileName = (TextView) row.findViewById(R.id.fileName);
-                holder.percentage = (TextView) row.findViewById(R.id.percentage);
-                holder.progressBar = (ProgressBar) row.findViewById(R.id.progressbar);
-                holder.status = (TextView) row.findViewById(R.id.status);
-                holder.totalSize = (TextView) row.findViewById(R.id.uploads_activity_file_size);
+                holder.fileName = (TextView) row.findViewById(R.id.uploads_fileName);
+                holder.percentage = (TextView) row.findViewById(R.id.uploads_percentage);
+                holder.progressBar = (ProgressBar) row.findViewById(R.id.uploads_progressbar);
+                holder.status = (TextView) row.findViewById(R.id.uploads_status);
+                holder.totalSize = (TextView) row.findViewById(R.id.uploads_file_size);
 
                 row.setTag(holder);
             }
@@ -200,6 +203,9 @@ public class DownloadsActivity extends Activity {
 
         setContentView(R.layout.downloads_activity);
         _fooshare = (FooshareApplication) getApplication();
+        _uploadsSlideDrawer = (SlidingDrawer) findViewById(R.id.uploads_drawer);
+        _uploadsSlideDrawer.setOnDrawerOpenListener(onClick_DrawerOpened);
+        _uploadsSlideDrawer.setOnDrawerCloseListener(onClick_DrawerClosed);
 
         _downloadsList = _fooshare.getDownloads(new Predicate<Download>() {
             public boolean pred(Download ele) {
@@ -241,6 +247,7 @@ public class DownloadsActivity extends Activity {
     protected void onResume() {
         super.onResume();
         _fooshare.checkin();
+        _uploadsSlideDrawer.close();
 
         _downloadsList = _fooshare.getDownloads(new Predicate<Download>() {
             public boolean pred(Download ele) {
@@ -276,29 +283,51 @@ public class DownloadsActivity extends Activity {
     }
 
     public void onDownloadEntryClick(View view) {
-        int position = _downloadsListView.getPositionForView((View) view.getParent());
-        Download dlclicked = _downloadsListAdapter.getItem(position);
-        switch (dlclicked.status()) {
-        case FINISHED:
-        case CANCELED:
-        case FAILED:
-            _fooshare.removeDownload(dlclicked);
-            _downloadsList.remove(dlclicked);
-            _downloadsListAdapter.notifyDataSetChanged();
+        try {
+            int position = _downloadsListView.getPositionForView((View) view.getParent());
+            if (position < 0)
+                return;
+
+            Log.d(TAG, "onDownloadEntryClick() position: " + position);
+            Download dlclicked = _downloadsListAdapter.getItem(position);
+            switch (dlclicked.status()) {
+            case FINISHED:
+            case CANCELED:
+            case FAILED:
+                _fooshare.removeDownload(dlclicked);
+                //            _downloadsList.remove(dlclicked);
+                //            _downloadsListAdapter.notifyDataSetChanged();
+            }
+        }
+        catch (Exception e) {
+            Log.e(TAG, Log.getStackTraceString(e));
         }
     }
 
     public void onUploadEntryClick(View view) {
-        int position = _uploadsListView.getPositionForView((View) view.getParent());
-        Upload upclicked = _uploadsListAdapter.getItem(position);
-        switch (upclicked.status()) {
-        case FINISHED:
-        case CANCELED:
-        case FAILED:
-            _fooshare.removeUpload(upclicked);
-            _uploadsList.remove(upclicked);
-            _uploadsListAdapter.notifyDataSetChanged();
+        try {
+            int position = _uploadsListView.getPositionForView((View) view.getParent());
+            if (position < 0)
+                return;
+
+            Log.d(TAG, "onUploadEntryClick() position: " + position);
+            Upload dlclicked = _uploadsListAdapter.getItem(position);
+            switch (dlclicked.status()) {
+            case FINISHED:
+            case CANCELED:
+            case FAILED:
+                _fooshare.removeUpload(dlclicked);
+                //            _uploadsList.remove(dlclicked);
+                //            _uploadsListAdapter.notifyDataSetChanged();
+            }
         }
+        catch (Exception e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
+    }
+
+    public void onUploadsClearListClick(View view) {
+        Log.d(TAG, "on upload clear list click");
     }
 
     public class DownloadUpdateReceiver extends ResultReceiver {
@@ -313,6 +342,24 @@ public class DownloadsActivity extends Activity {
             _downloadsListAdapter.notifyDataSetChanged();
         }
     }
+
+    private SlidingDrawer _uploadsSlideDrawer;
+
+    //sliderdrawer close
+    private OnDrawerCloseListener onClick_DrawerClosed = new OnDrawerCloseListener() {
+
+        public void onDrawerClosed() {
+            _uploadsSlideDrawer.setClickable(false);
+        }
+    };
+
+    //sliderdrawer open
+    private OnDrawerOpenListener onClick_DrawerOpened = new OnDrawerOpenListener() {
+
+        public void onDrawerOpened() {
+            _uploadsSlideDrawer.setClickable(true);
+        }
+    };
 
 
     public class UploadUpdateReceiver extends ResultReceiver {

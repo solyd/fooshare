@@ -27,7 +27,7 @@ public class AlljoynBusHandler extends Handler {
     protected AlljoynService      _alljoynService;
     protected PeerService         _peerService;
 
-    public static final int    SESSION_TIMEOUT  = 30; // seconds
+    public static final int    SESSION_TIMEOUT  = 10; // seconds
     public static final String PEER_SERVICENAME = "/PeerService";
     public static final String RAW_SERVICENAME  = "/RawPeerService";
     public static final int TYPE_REGULAR        = 0;
@@ -284,7 +284,7 @@ public class AlljoynBusHandler extends Handler {
         switch (sessionType) {
         case TYPE_REGULAR:
             sessionOpts.traffic = SessionOpts.TRAFFIC_MESSAGES;
-            sessionOpts.isMultipoint = true;
+            sessionOpts.isMultipoint = false;
             sessionOpts.proximity = SessionOpts.PROXIMITY_ANY;
             sessionOpts.transports = SessionOpts.TRANSPORT_ANY;
             break;

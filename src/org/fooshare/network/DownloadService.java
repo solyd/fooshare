@@ -8,6 +8,7 @@ import org.fooshare.AlljoynPeer;
 import org.fooshare.FileItem;
 import org.fooshare.FooshareApplication;
 import org.fooshare.IPeer;
+import org.fooshare.network.Download.DownloadStatus;
 import org.fooshare.network.IPeerService.FileServerInfo;
 import org.fooshare.predicates.PeerIdPredicate;
 
@@ -49,6 +50,9 @@ public class DownloadService extends IntentService {
         }
         catch (BusException e) {
             Log.i(TAG, String.format("Couldn't get host of %s", ownerId));
+            Download failed = new Download(fooshare, null, 0, fileItem, null);
+            failed.setStatus(DownloadStatus.FAILED);
+            fooshare.addDownload(failed);
             return;
         }
 

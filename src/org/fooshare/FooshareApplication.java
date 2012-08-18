@@ -102,6 +102,9 @@ public class FooshareApplication extends Application {
      * running. For example - the Alljoyn Service and the File Server.
      */
     public void checkin() {
+        Log.d(TAG, "checkin()");
+        if (_storage.isRegistrationNeeded() != null)
+            return;
         initAlljoynService();
         initFileServerService();
     }

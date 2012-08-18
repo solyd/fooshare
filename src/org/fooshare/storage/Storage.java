@@ -29,12 +29,15 @@ public class Storage implements IStorage  {
     protected static final String UID_NAME          = "uid";
     protected static final String NICKNAME_NAME     = "nickname";
     protected static final String NO_VALUE          = "";
+    protected static final String FILES_HASH        = "FilesHash";
+
     protected static final int BUFFER_SIZE          = 4096; // bytes
 
     private Set<String> mSharedDirectories = new HashSet<String>();
 	private volatile String mDownloadDirectory;
 	private volatile String mUid = "";
 	private volatile String mNickname = "";
+	private volatile String mFilesHash = "";
 
 	private Context mContext;
 
@@ -48,6 +51,8 @@ public class Storage implements IStorage  {
 	private void loadPreferences() {
 		// Restore preferences
 		mPrefSettings = mContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);   //MODE_WORLD_READABLE
+
+		mFilesHash = mPrefSettings.getString(FILES_HASH, NO_VALUE);
 
 		// restore uid
 		mUid = mPrefSettings.getString(UID_NAME, NO_VALUE);
@@ -139,6 +144,9 @@ public class Storage implements IStorage  {
 			if (mSharedDirectories.add(_sharedDir[i]))
 			    sb.append(_sharedDir[i]).append(SHARED_DIR_SEP);
 		}
+
+		mFilesHash = UUID.randomUUID().toString();
+		savePrefString(FILES_HASH, mFilesHash);
 
 		return savePrefString(SHARED_DIR_NAME, sb.toString());
 	}
@@ -248,5 +256,9 @@ public class Storage implements IStorage  {
 		}
 
 		return false;
+	}
+
+	public String filesHash() {
+	    return mFilesHash;
 	}
 }

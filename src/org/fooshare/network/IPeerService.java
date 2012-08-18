@@ -36,6 +36,12 @@ public interface IPeerService {
     @BusMethod(replySignature="a(sxs)")
     AlljoynFileItem[] peerFiles() throws BusException;
 
+    @BusMethod
+    String peerFilesHash() throws BusException;
+
+    @BusMethod
+    int notifyFilesChanged(String peerId) throws BusException;
+
     @BusMethod(replySignature="(si)")
     FileServerInfo fileServerDetails() throws BusException;
 
