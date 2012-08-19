@@ -211,32 +211,6 @@ public class RegistrationFragment extends Fragment {
 		}
 	};
 
-//	OnItemLongClickListener OnUDirItemClickListener = new OnItemLongClickListener() {
-//		public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-//
-//			ListView lv_sharedDir = (ListView)getActivity().findViewById(R.id.listView_uDir);
-//		    final Object o = lv_sharedDir.getItemAtPosition(position);
-//
-//			builder.setMessage("Are you sure you want to remove " + o.toString() + " ?")
-//		       .setCancelable(false)
-//		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//		           public void onClick(DialogInterface dialog, int id) {
-//		   		    adapter.remove(o.toString());
-//				    UpdateSharedDir();
-//		           }
-//		       })
-//		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-//		           public void onClick(DialogInterface dialog, int id) {
-//		                dialog.cancel();
-//		           }
-//		       });
-//
-//			AlertDialog alert = builder.create();
-//			alert.show();
-//			return true;
-//		  }
-//	   };
-
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 

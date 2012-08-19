@@ -6,10 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -195,7 +193,7 @@ public class Storage implements IStorage  {
 
 
 	public synchronized File[] getMySharedFiles() {
-		List<File> sharedFiles = new ArrayList<File>();
+		Set<File> sharedFiles = new HashSet<File>();
 
 		for(String currDir : mSharedDirectories) {
 			File currDirFile = new File(currDir);
