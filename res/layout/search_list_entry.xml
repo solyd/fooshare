@@ -55,9 +55,10 @@
     <TextView
         android:id="@+id/search_entry_fileType"
         android:layout_width="wrap_content"
+        android:maxWidth="40dp"
         android:layout_height="match_parent"
         android:ellipsize="end"
-        android:maxWidth="40dp"
+        android:maxLines="1"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="15dp"

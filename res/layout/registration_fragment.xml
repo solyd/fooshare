@@ -13,90 +13,84 @@
 		android:focusable="true"
 		android:focusableInTouchMode="true"/>  
     
-    <TextView 
-  		android:id="@+id/chooseNick"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:focusable="false"
-		android:text = "Enter your nickname:"
-		android:paddingTop="5dp"
-		/>
+ 		   <TextView 
+  				android:id="@+id/chooseNick"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:focusable="false"
+				android:text = "Enter your nickname:"
+				android:paddingTop="5dp"/>
 	
-	<RelativeLayout 
-  		android:layout_width="fill_parent"
-   		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:paddingBottom="5dp"
-		>  
+			<RelativeLayout 
+  				android:layout_width="fill_parent"
+   				android:layout_height="wrap_content"
+				android:orientation="horizontal">  
      	
-     	<EditText 
-     		android:id="@+id/name_field"
-			android:layout_height="wrap_content"
-			android:layout_width="270dp"
-			android:inputType="text"
-			android:layout_alignParentLeft="true"
-			android:layout_centerVertical="true"
-			/>
+     			<EditText 
+     				android:id="@+id/name_field"
+					android:layout_height="wrap_content"
+					android:layout_width="270dp"
+					android:inputType="text"
+					android:layout_alignParentLeft="true"
+					android:layout_centerVertical="true"/>
 		
-		<Button 
-		    android:text="OK"
-   			android:id="@+id/nick_ok"
-    		android:layout_width="fill_parent"
-    		android:layout_height="25dp"
-    		android:layout_alignParentRight="true"
-    		android:layout_toRightOf="@+id/name_field"
-    		android:layout_marginLeft="2dp"
-    		android:layout_marginRight="2dp"
-    		android:layout_centerVertical="true"
-    		android:background="@drawable/button_shape"
-      		android:textColor="@drawable/button_selector"
-      	  	android:paddingLeft="2dp"
-        	android:paddingRight="2dp"
-        	android:textSize="12dp" />
+				<Button 
+		   		 	android:text="OK"
+   					android:id="@+id/nick_ok"
+    				android:layout_width="fill_parent"
+    				android:layout_height="35dp"
+    				android:layout_alignParentRight="true"
+    				android:layout_toRightOf="@+id/name_field"
+    				android:layout_marginLeft="2dp"
+    				android:layout_marginRight="2dp"
+    				android:layout_centerVertical="true"
+    				android:background="@drawable/button_shape"
+      				android:textColor="@drawable/button_selector"
+      			  	android:paddingLeft="2dp"
+     			   	android:paddingRight="2dp"
+       			 	android:textSize="12dp" />
      	
-	</RelativeLayout>
+			</RelativeLayout>
 	
 
    		
-	<TextView 
-  		android:id="@+id/chooseDFolder"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:focusable="false"
-		android:text = "Select download folder:"/>
+		<TextView 
+  			android:id="@+id/chooseDFolder"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:focusable="false"
+			android:text = "Select download folder:"/>
  
-	<EditText android:id="@+id/downloads_folder_field"
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent"
-		android:text="Press here to select a folder..."
-		android:textColor="#cdc9c9"
-		android:inputType="textNoSuggestions"
-		android:focusable="false"
-		android:clickable="true">
-	</EditText>		
+		<EditText android:id="@+id/downloads_folder_field"
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:text="Press here to select a folder..."
+			android:textColor="#cdc9c9"
+			android:inputType="textNoSuggestions"
+			android:focusable="false"
+			android:clickable="true">
+		</EditText>		
 		
-	<LinearLayout 
-	    
-  		android:layout_width="fill_parent"
-  		android:layout_height="0dip"
-  		android:orientation="vertical"
-  		android:layout_weight="1"> 
+		<LinearLayout 	    
+  			android:layout_width="fill_parent"
+  			android:layout_height="0dip"
+  			android:orientation="vertical"
+  			android:layout_weight="1"> 
 	    
 	    <LinearLayout
         	android:layout_width="fill_parent"
-        	android:layout_height="30dp" >
+        	android:layout_height="35dp" >
 
 		    <TextView 
 	  			android:id="@+id/chooseUFolder"
 				android:layout_width="270dp"
 				android:layout_height="match_parent"
-				
 				android:text = "Select shared folder:"/>
 	
 	        <Button
 	            android:id="@+id/button_download"
 	            android:layout_width="fill_parent"
-	            android:layout_height="25dp"
+	            android:layout_height="fill_parent"
 	            android:layout_marginLeft="2dp"
     			android:layout_marginRight="2dp"
 	            android:text="Add..."

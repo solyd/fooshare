@@ -315,10 +315,10 @@ public class FileBrowserActivity extends Activity {
                 // Set drawables
                 if (sel.isDirectory()) {
                     if (canRead) {
-                        drawableID = R.drawable.folder_icon;
+                        drawableID = R.drawable.folder_yellow;
                     }
                     else {
-                        drawableID = R.drawable.folder_icon_light;
+                        drawableID = R.drawable.folder_grey;
                     }
                 }
                 else {
